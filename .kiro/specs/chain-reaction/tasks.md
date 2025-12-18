@@ -57,28 +57,28 @@
     - Create data validation utilities to ensure graph consistency
     - _Requirements: 3.4, 10.1_
 
-- [ ] 4. Build DSPy analysis module
-  - [ ] 4.1 Create DSPy signature and risk extraction module
+- [x] 4. Build DSPy analysis module
+  - [x] 4.1 Create DSPy signature and risk extraction module
     - Define RiskExtractor signature with input/output fields
     - Implement RiskAnalyst module using ChainOfThought
     - Create training data structure and compilation methods
     - _Requirements: 5.1, 5.2, 5.3_
 
-  - [ ] 4.2 Write property test for extraction pipeline completeness
+  - [x] 4.2 Write property test for extraction pipeline completeness
     - **Property 5: Extraction pipeline completeness**
     - **Validates: Requirements 2.2, 2.3, 5.1, 5.2, 5.3**
 
-  - [ ] 4.3 Implement extraction validation and confidence scoring
+  - [x] 4.3 Implement extraction validation and confidence scoring
     - Create data validation functions for extracted risk events
     - Implement confidence threshold checking and uncertainty flagging
     - Add error logging and fallback mechanisms for failed extractions
     - _Requirements: 5.3, 2.4_
 
-  - [ ] 4.4 Write property test for error handling continuity
+  - [x] 4.4 Write property test for error handling continuity
     - **Property 6: Error handling continuity**
     - **Validates: Requirements 2.4**
 
-  - [ ] 4.5 Implement DSPy recompilation on training data updates
+  - [x] 4.5 Implement DSPy recompilation on training data updates
     - Create training data management and versioning system
     - Implement automatic recompilation triggers when training data changes
     - Add performance tracking to measure extraction accuracy improvements
