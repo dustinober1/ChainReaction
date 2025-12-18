@@ -29,6 +29,18 @@ from src.agents.scout import (
     RateLimiter,
     ScoutAgent,
 )
+from src.agents.nodes import (
+    monitor_node,
+    extract_node,
+    validate_node,
+    analyze_node,
+    alert_node,
+)
+from src.agents.workflow import (
+    build_risk_monitoring_workflow,
+    WorkflowExecutor,
+    run_risk_monitoring,
+)
 
 __all__ = [
     # State
@@ -51,4 +63,14 @@ __all__ = [
     "EventDeduplicator",
     "RateLimiter",
     "ScoutAgent",
+    # Nodes
+    "monitor_node",
+    "extract_node",
+    "validate_node",
+    "analyze_node",
+    "alert_node",
+    # Workflow
+    "build_risk_monitoring_workflow",
+    "WorkflowExecutor",
+    "run_risk_monitoring",
 ]

@@ -69,14 +69,18 @@ class WorkflowConfig(BaseModel):
     monitor_interval_seconds: int = Field(
         default=300, description="Interval between monitoring cycles"
     )
-    max_events_per_cycle: int = Field(
-        default=50, description="Maximum events to process per cycle"
+    max_events_per_run: int = Field(
+        default=50, description="Maximum events to process per run"
     )
     confidence_threshold: float = Field(
         default=0.7, description="Minimum confidence for risk acceptance"
     )
+    alert_threshold: float = Field(
+        default=6.0, description="Minimum severity score to generate alerts"
+    )
     max_retries: int = Field(default=3, description="Maximum retries for failed operations")
     timeout_seconds: int = Field(default=60, description="Operation timeout in seconds")
+
 
 
 def create_initial_state() -> AgentState:
