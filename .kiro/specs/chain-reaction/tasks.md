@@ -28,29 +28,29 @@
     - **Property 9: JSON import round-trip consistency**
     - **Validates: Requirements 3.4**
 
-- [ ] 3. Generate comprehensive synthetic supply chain data
-  - [ ] 3.1 Create synthetic data generation utilities
+- [x] 3. Generate comprehensive synthetic supply chain data
+  - [x] 3.1 Create synthetic data generation utilities
     - Implement configurable supply chain graph generator using Faker library
     - Create realistic supplier, component, product, and location entities
     - Generate multi-tier supply chain relationships (Raw Material → Component → Sub-Assembly → Final Product)
     - Add realistic risk zones and geographic distribution for suppliers
     - _Requirements: 3.1, 3.4_
 
-  - [ ] 3.2 Build large-scale test datasets
+  - [x] 3.2 Build large-scale test datasets
     - Generate small dataset (100 nodes) for development and unit testing
     - Create medium dataset (5,000 nodes) for integration testing
     - Build large dataset (50,000+ nodes) for performance and scalability testing
     - Include realistic supply chain complexity with multiple sourcing options
     - _Requirements: 3.5_
 
-  - [ ] 3.3 Create sample risk event datasets
+  - [x] 3.3 Create sample risk event datasets
     - Generate diverse news article samples covering all event types (strikes, weather, bankruptcies, geopolitical)
     - Create training data for DSPy module compilation with known good extractions
     - Build test scenarios with known impact chains for validation
     - Include edge cases like ambiguous content and extraction failures
     - _Requirements: 5.1, 5.4_
 
-  - [ ] 3.4 Implement data seeding and management utilities
+  - [x] 3.4 Implement data seeding and management utilities
     - Create database seeding scripts for different dataset sizes
     - Implement data cleanup and reset utilities for testing
     - Add data export capabilities for sharing and backup
