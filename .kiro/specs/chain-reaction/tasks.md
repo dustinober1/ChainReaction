@@ -7,24 +7,24 @@
   - Configure development database and testing framework
   - _Requirements: 8.4, 8.5_
 
-- [ ] 2. Implement core data models and graph schema
-  - [ ] 2.1 Create Pydantic models for supply chain entities
+- [x] 2. Implement core data models and graph schema
+  - [x] 2.1 Create Pydantic models for supply chain entities
     - Write Supplier, Component, Product, and Location models with validation
     - Implement RiskEvent and ImpactAssessment models
     - Create AgentState model for LangGraph workflow management
     - _Requirements: 3.1, 6.4_
 
-  - [ ] 2.2 Write property test for graph data integrity
+  - [x] 2.2 Write property test for graph data integrity
     - **Property 8: Graph data integrity preservation**
     - **Validates: Requirements 3.1, 3.2, 3.3**
 
-  - [ ] 2.3 Implement Neo4j connection and schema setup
+  - [x] 2.3 Implement Neo4j connection and schema setup
     - Create database connection utilities with error handling
     - Define Cypher queries for node and relationship creation
     - Implement graph schema validation and constraint enforcement
     - _Requirements: 3.1, 3.2_
 
-  - [ ] 2.4 Write property test for JSON import consistency
+  - [x] 2.4 Write property test for JSON import consistency
     - **Property 9: JSON import round-trip consistency**
     - **Validates: Requirements 3.4**
 
