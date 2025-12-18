@@ -18,7 +18,7 @@ class Neo4jSettings(BaseSettings):
 
     uri: str = Field(default="bolt://localhost:7687", description="Neo4j connection URI")
     username: str = Field(default="neo4j", description="Neo4j username")
-    password: SecretStr = Field(description="Neo4j password")
+    password: SecretStr = Field(default="password", description="Neo4j password")
     database: str = Field(default="neo4j", description="Neo4j database name")
 
 
@@ -27,7 +27,7 @@ class OpenAISettings(BaseSettings):
 
     model_config = SettingsConfigDict(env_prefix="OPENAI_")
 
-    api_key: SecretStr = Field(description="OpenAI API key")
+    api_key: SecretStr = Field(default="not-set", description="OpenAI API key")
     model: str = Field(default="gpt-4-turbo-preview", description="Default model to use")
 
 
@@ -81,7 +81,8 @@ class Settings(BaseSettings):
     log_level: Literal["DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL"] = Field(
         default="INFO", description="Logging level"
     )
-    secret_key: SecretStr = Field(description="Application secret key")
+    secret_key: SecretStr = Field(default="dev-secret-key", description="Application secret key")
+    api_key: SecretStr = Field(default="dev-api-key-12345", description="Default API key for development")
 
     # Nested settings
     neo4j: Neo4jSettings = Field(default_factory=Neo4jSettings)
