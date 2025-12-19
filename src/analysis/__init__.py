@@ -74,6 +74,18 @@ from src.analysis.mitigation import (
     MitigationOutcome,
     CoordinatedStrategy,
 )
+from src.analysis.alerts import (
+    AlertManager,
+    AlertRuleManager,
+    ChannelDeliverer,
+    AcknowledgmentTracker,
+    LatencyMonitor,
+    DeliveryStatus,
+    RuleChangeType,
+    AlertInstance,
+    RuleChange,
+    DeliveryMetrics,
+)
 
 __all__ = [
     # Signatures
@@ -144,4 +156,15 @@ __all__ = [
     "ImpactSimulation",
     "MitigationOutcome",
     "CoordinatedStrategy",
+    # Alerts
+    "AlertManager",
+    "AlertRuleManager",
+    "ChannelDeliverer",
+    "AcknowledgmentTracker",
+    "LatencyMonitor",
+    "DeliveryStatus",
+    "RuleChangeType",
+    "AlertInstance",
+    "RuleChange",
+    "DeliveryMetrics",
 ]
