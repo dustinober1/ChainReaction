@@ -226,55 +226,55 @@ Each task builds incrementally on previous work, with property-based tests valid
   - Check alert system functionality
   - Ask the user if questions arise
 
-- [ ] 7. Enhanced Search and Filtering
-  - [ ] 7.1 Implement full-text search across risk events
+- [x] 7. Enhanced Search and Filtering
+  - [x] 7.1 Implement full-text search across risk events
     - Index event descriptions, locations, entities
     - Support keyword search
     - Return matching events
     - _Requirements: 4.1_
 
-  - [ ] 7.2 Write property tests for full-text search
+  - [x] 7.2 Write property tests for full-text search
     - **Property 16: Full-Text Search Coverage**
     - **Validates: Requirements 4.1**
 
-  - [ ] 7.3 Implement complex filter combinations with AND/OR logic
+  - [x] 7.3 Implement complex filter combinations with AND/OR logic
     - Parse filter expressions
     - Support multiple filter types
     - Combine with AND/OR logic
     - Return filtered results
     - _Requirements: 4.2_
 
-  - [ ] 7.4 Write property tests for filter logic
+  - [x] 7.4 Write property tests for filter logic
     - **Property 17: Filter Combination Logic**
     - **Validates: Requirements 4.2**
 
-  - [ ] 7.5 Implement entity search with relationship traversal
+  - [x] 7.5 Implement entity search with relationship traversal
     - Search for entities by name/ID
     - Return related risks, products, impact paths
     - Include all relationship data
     - _Requirements: 4.3_
 
-  - [ ] 7.6 Write property tests for entity search
+  - [x] 7.6 Write property tests for entity search
     - **Property 18: Entity Search Completeness**
     - **Validates: Requirements 4.3**
 
-  - [ ] 7.7 Implement multi-format export (CSV, JSON)
+  - [x] 7.7 Implement multi-format export (CSV, JSON)
     - Export search results to CSV
     - Export search results to JSON
     - Include all relevant metadata
     - _Requirements: 4.4_
 
-  - [ ] 7.8 Write property tests for export completeness
+  - [x] 7.8 Write property tests for export completeness
     - **Property 19: Export Format Completeness**
     - **Validates: Requirements 4.4**
 
-  - [ ] 7.9 Implement saved search queries
+  - [x] 7.9 Implement saved search queries
     - Save search queries with names
     - Retrieve saved queries
     - Re-execute saved queries
     - _Requirements: 4.5_
 
-  - [ ] 7.10 Write property tests for saved searches
+  - [x] 7.10 Write property tests for saved searches
     - **Property 20: Saved Search Reusability**
     - **Validates: Requirements 4.5**
 

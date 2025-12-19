@@ -86,6 +86,21 @@ from src.analysis.alerts import (
     RuleChange,
     DeliveryMetrics,
 )
+from src.analysis.search import (
+    SearchManager,
+    FullTextSearchEngine,
+    FilterEngine,
+    EntitySearchEngine,
+    ExportEngine,
+    SavedSearchManager,
+    FilterOperator,
+    ExportFormat,
+    SearchFilter,
+    FilterGroup,
+    SearchResult,
+    SavedSearch,
+    EntitySearchResult,
+)
 
 __all__ = [
     # Signatures
@@ -167,4 +182,18 @@ __all__ = [
     "AlertInstance",
     "RuleChange",
     "DeliveryMetrics",
+    # Search
+    "SearchManager",
+    "FullTextSearchEngine",
+    "FilterEngine",
+    "EntitySearchEngine",
+    "ExportEngine",
+    "SavedSearchManager",
+    "FilterOperator",
+    "ExportFormat",
+    "SearchFilter",
+    "FilterGroup",
+    "SearchResult",
+    "SavedSearch",
+    "EntitySearchResult",
 ]
