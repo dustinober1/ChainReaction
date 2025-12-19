@@ -4,7 +4,7 @@ Pydantic schemas for API request and response models.
 Provides standardized data structures for the FastAPI endpoints.
 """
 
-from datetime import datetime
+from datetime import datetime, timezone
 from typing import Any, Generic, TypeVar
 from pydantic import BaseModel, Field, ConfigDict
 

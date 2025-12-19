@@ -32,6 +32,13 @@ from src.analysis.reporting import (
     MitigationOption,
     ReportFormat,
 )
+from src.analysis.integrity import (
+    EntityValidator,
+    ReferentialIntegrityChecker,
+    DataIntegrityManager,
+    IntegrityCheckResult,
+    format_validation_errors,
+)
 
 __all__ = [
     # Signatures
@@ -64,5 +71,10 @@ __all__ = [
     "TimelineEstimate",
     "MitigationOption",
     "ReportFormat",
+    # Integrity
+    "EntityValidator",
+    "ReferentialIntegrityChecker",
+    "DataIntegrityManager",
+    "IntegrityCheckResult",
+    "format_validation_errors",
 ]
-
