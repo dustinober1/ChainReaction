@@ -12,7 +12,7 @@ import uuid
 import dspy
 import structlog
 
-from src.analysis.signatures import RiskExtractor, EntityExtractor, ImpactAssessor
+from src.analysis.signatures import RiskExtractor, EntityExtractor, ImpactAssessor, MitigationCoPilot
 from src.models import RiskEvent, EventType, SeverityLevel
 
 logger = structlog.get_logger(__name__)
@@ -291,3 +291,92 @@ class ImpactAnalyst(dspy.Module):
                 "success": False,
                 "error": str(e),
             }
+
+class MitigationCoPilotModule(dspy.Module):
+    """
+    DSPy module for generating specific, actionable risk mitigation strategies.
+
+    Utilizes supply chain context and risk event details to provide
+    prioritized recommendations.
+    """
+
+    def __init__(self):
+        """Initialize the MitigationCoPilotModule."""
+        super().__init__()
+        self.suggester = dspy.ChainOfThought(MitigationCoPilot)
+
+    def forward(
+        self,
+        risk_event: str,
+        affected_entities: str,
+        supply_chain_structure: str,
+    ) -> dspy.Prediction:
+        """Generate mitigation recommendations."""
+        return self.suggester(
+            risk_event=risk_event,
+            affected_entities=affected_entities,
+            supply_chain_structure=supply_chain_structure,
+        )
+
+    def get_recommendations(
+        self,
+        risk_event: RiskEvent,
+        affected_entities: list[str],
+        graph_context: str = "",
+    ) -> dict[str, Any]:
+        """
+        Get actionable recommendations for a risk event.
+
+        Args:
+            risk_event: The risk event model.
+            affected_entities: List of affected entity names/IDs.
+            graph_context: Structural context from the graph (e.g., alternatives).
+
+        Returns:
+            Dict with prioritized actions, strategic mitigations, and rationale.
+        """
+        event_str = (
+            f"Type: {risk_event.event_type.value}, "
+            f"Severity: {risk_event.severity.value}, "
+            f"Location: {risk_event.location}, "
+            f"Description: {risk_event.description}"
+        )
+        entities_str = ", ".join(affected_entities) or "Unknown entities"
+
+        try:
+            result = self.forward(
+                risk_event=event_str,
+                affected_entities=entities_str,
+                supply_chain_structure=graph_context or "No specific graph context provided",
+            )
+
+            return {
+                "top_priority_actions": self._parse_list(result.top_priority_actions),
+                "strategic_mitigations": self._parse_list(result.strategic_mitigations),
+                "rationale": result.rationale,
+                "estimated_risk_reduction": result.estimated_risk_reduction,
+                "success": True,
+            }
+        except Exception as e:
+            logger.error("Mitigation generation failed", error=str(e))
+            return {
+                "top_priority_actions": [],
+                "strategic_mitigations": [],
+                "rationale": "Error during generation",
+                "estimated_risk_reduction": "Unknown",
+                "success": False,
+                "error": str(e),
+            }
+
+    def _parse_list(self, value: str) -> list[str]:
+        """Convert comma-separated or newline-separated string to list."""
+        if not value or value.lower() == "none":
+            return []
+
+        # Try splitting by newline if multiple lines
+        if "\n" in value:
+            lines = [line.strip().lstrip("- ").lstrip("123456789. ") for line in value.split("\n")]
+            return [line for line in lines if line]
+
+        # Fallback to comma split
+        return [item.strip() for item in value.split(",") if item.strip()]

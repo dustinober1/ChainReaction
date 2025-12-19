@@ -25,6 +25,7 @@ from src.api.schemas import (
     AlertResponse,
     RiskEventCreateRequest,
     StatsResponse,
+    MitigationResponse,
 )
 from src.api.auth import (
     get_api_key,
@@ -36,10 +37,18 @@ from src.api.auth import (
 )
 from src.models import RiskEvent, ImpactAssessment, EventType, SeverityLevel
 
-logger = structlog.get_logger(__name__)
+from src.analysis.modules import RiskAnalyst, EntityAnalyst, ImpactAnalyst, MitigationCoPilotModule
 
 # Create routers
 router = APIRouter()
+alert_router = APIRouter(prefix="/alerts", tags=["alerts"])
+
+# Initialize modules
+risk_analyst = RiskAnalyst()
+entity_analyst = EntityAnalyst()
+impact_analyst = ImpactAnalyst()
+mitigation_copilot = MitigationCoPilotModule()
+
 risk_router = APIRouter(prefix="/risks", tags=["risks"])
 supply_chain_router = APIRouter(prefix="/supply-chain", tags=["supply-chain"])
 alert_router = APIRouter(prefix="/alerts", tags=["alerts"])
@@ -197,6 +206,49 @@ async def delete_risk(risk_id: str, api_key: RequireAdmin):
     del _risk_events[risk_id]
 
     logger.info("Deleted risk event", risk_id=risk_id, user=api_key.name)
+
+@risk_router.get("/{risk_id}/mitigation", response_model=APIResponse[MitigationResponse])
+async def suggest_mitigation(risk_id: str, api_key: RequireReader):
+    """
+    Get AI-suggested mitigation strategies for a specific risk.
+    """
+    if risk_id not in _risk_events:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=f"Risk event {risk_id} not found",
+        )
+
+    risk_event = _risk_events[risk_id]
+
+    # In a real app, we would query the graph for context here
+    # For the demo, we'll provide some simulated graph context
+    graph_context = (
+        f"Primary supplier {risk_event.affected_entities[0]} has 2 backup suppliers "
+        "in alternative regions with 30% available capacity."
+    ) if risk_event.affected_entities else "No backup providers identified in the graph."
+
+    recommendations = mitigation_copilot.get_recommendations(
+        risk_event=risk_event,
+        affected_entities=risk_event.affected_entities,
+        graph_context=graph_context
+    )
+
+    if not recommendations["success"]:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Failed to generate mitigation recommendations",
+        )
+
+    return APIResponse(
+        success=True,
+        data=MitigationResponse(
+            risk_event_id=risk_id,
+            top_priority_actions=recommendations["top_priority_actions"],
+            strategic_mitigations=recommendations["strategic_mitigations"],
+            rationale=recommendations["rationale"],
+            estimated_risk_reduction=recommendations["estimated_risk_reduction"]
+        )
+    )
 
     return APIResponse(success=True, message=f"Risk event {risk_id} deleted")
 

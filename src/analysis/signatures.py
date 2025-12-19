@@ -103,6 +103,38 @@ class ImpactAssessor(dspy.Signature):
         desc="Estimated timeline for impact (immediate, days, weeks, months)"
     )
 
-    mitigation_suggestions: str = dspy.OutputField(
-        desc="Suggested mitigation strategies"
+class MitigationCoPilot(dspy.Signature):
+    """
+    Generate specific, actionable mitigation strategies for supply chain risks.
+
+    Provides a prioritized list of actions based on the specific risk event
+    and the affected supply chain entities.
+    """
+
+    risk_event: str = dspy.InputField(
+        desc="Description of the risk event including type, severity, and location"
+    )
+
+    affected_entities: str = dspy.InputField(
+        desc="List of affected suppliers, components, and products"
+    )
+
+    supply_chain_structure: str = dspy.InputField(
+        desc="Relevant graph-based context (alternatives, backup suppliers, etc.)"
+    )
+
+    top_priority_actions: str = dspy.OutputField(
+        desc="List of 3-5 immediate actions to take (e.g., 'Activate backup supplier X')"
+    )
+
+    strategic_mitigations: str = dspy.OutputField(
+        desc="Long-term strategic changes to improve resilience"
+    )
+
+    rationale: str = dspy.OutputField(
+        desc="Explanation for why these actions are prioritized"
+    )
+
+    estimated_risk_reduction: str = dspy.OutputField(
+        desc="Estimated reduction in risk score (High/Medium/Low) after actions"
     )

@@ -207,4 +207,12 @@ class StatsResponse(BaseModel):
     active_risks: int
     pending_alerts: int
     last_monitoring_run: datetime | None
-    avg_risk_score: float
+class MitigationResponse(BaseModel):
+    """Response containing AI-generated mitigation strategies."""
+
+    risk_event_id: str
+    top_priority_actions: list[str]
+    strategic_mitigations: list[str]
+    rationale: str
+    estimated_risk_reduction: str
+    generated_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
