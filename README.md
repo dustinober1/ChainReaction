@@ -17,12 +17,14 @@ ChainReaction is an intelligent supply chain risk monitoring platform that combi
 - **Real-Time Alerts**: Webhook-based notification system with configurable triggers
 - **Interactive Dashboard**: Next.js frontend with force-directed graph visualization
 - **REST API**: FastAPI backend with authentication, rate limiting, and standardized responses
+- **Local LLM Support**: Run entirely locally with Ollama - no API keys required!
 
 ## 📋 Table of Contents
 
 - [Quick Start](#-quick-start)
 - [Architecture](#-architecture)
 - [Installation](#-installation)
+- [LLM Configuration](#-llm-configuration)
 - [Configuration](#-configuration)
 - [API Reference](#-api-reference)
 - [Frontend Dashboard](#-frontend-dashboard)
@@ -43,7 +45,7 @@ pip install -e .
 
 # Copy environment template
 cp .env.example .env
-# Edit .env with your API keys
+# Edit .env with your API keys (or configure Ollama for local LLM)
 
 # Run tests
 pytest tests/ -v
@@ -100,7 +102,7 @@ ChainReaction uses a modular, event-driven architecture:
 | Component              | Description                                   | Technology                 |
 | ---------------------- | --------------------------------------------- | -------------------------- |
 | **Scout Agent**        | Monitors news sources for supply chain events | Python, HTTPX, Tavily API  |
-| **DSPy Analysis**      | Extracts risks, entities, and assessments     | DSPy, OpenAI               |
+| **DSPy Analysis**      | Extracts risks, entities, and assessments     | DSPy, OpenAI/Ollama        |
 | **GraphRAG Engine**    | Traces impact paths through supply chain      | Neo4j, Cypher              |
 | **LangGraph Workflow** | Orchestrates multi-agent processing           | LangGraph                  |
 | **REST API**           | Provides data access and management           | FastAPI                    |
@@ -113,7 +115,7 @@ ChainReaction uses a modular, event-driven architecture:
 - Python 3.13+
 - Node.js 18+
 - Neo4j 5.x (optional, for production)
-- API keys for OpenAI and Tavily (optional)
+- **Either**: OpenAI API key **or** Ollama (for local LLM)
 
 ### Backend Setup
 
@@ -154,6 +156,58 @@ NEO4J_USERNAME=neo4j
 NEO4J_PASSWORD=your-password
 ```
 
+## 🤖 LLM Configuration
+
+ChainReaction supports both **OpenAI** and **Ollama** for AI-powered analysis.
+
+### Option 1: OpenAI (Cloud)
+
+Best for: Production deployments, highest quality results
+
+```bash
+# In .env
+LLM_PROVIDER=openai
+OPENAI_API_KEY=sk-your-api-key-here
+OPENAI_MODEL=gpt-4-turbo-preview
+```
+
+### Option 2: Ollama (Local)
+
+Best for: Development, privacy-sensitive deployments, no API costs
+
+```bash
+# 1. Install Ollama
+curl -fsSL https://ollama.com/install.sh | sh
+
+# 2. Pull a model
+ollama pull llama3.2
+
+# 3. Configure .env
+LLM_PROVIDER=ollama
+OLLAMA_BASE_URL=http://localhost:11434
+OLLAMA_MODEL=llama3.2
+```
+
+### Recommended Ollama Models
+
+| Model          | Size | Quality | Speed | Best For                   |
+| -------------- | ---- | ------- | ----- | -------------------------- |
+| `llama3.2`     | 3B   | ★★★☆☆   | ★★★★★ | Development, quick testing |
+| `llama3.1`     | 8B   | ★★★★☆   | ★★★★☆ | Balanced performance       |
+| `llama3.1:70b` | 70B  | ★★★★★   | ★★☆☆☆ | Production quality         |
+| `mistral`      | 7B   | ★★★★☆   | ★★★★★ | Fast and capable           |
+| `mixtral`      | 8x7B | ★★★★★   | ★★★☆☆ | Best open-source quality   |
+
+### Checking LLM Status
+
+```bash
+# Check which LLM is configured
+curl http://localhost:8000/health
+
+# Check LLM availability
+curl http://localhost:8000/llm/status
+```
+
 ## ⚙️ Configuration
 
 Create a `.env` file in the project root:
@@ -165,14 +219,21 @@ APP_DEBUG=true
 LOG_LEVEL=INFO
 SECRET_KEY=your-secret-key-here
 
+# LLM Provider (openai or ollama)
+LLM_PROVIDER=openai
+
+# OpenAI (if using OpenAI)
+OPENAI_API_KEY=sk-your-key-here
+OPENAI_MODEL=gpt-4-turbo-preview
+
+# Ollama (if using Ollama)
+OLLAMA_BASE_URL=http://localhost:11434
+OLLAMA_MODEL=llama3.2
+
 # Neo4j Database
 NEO4J_URI=bolt://localhost:7687
 NEO4J_USERNAME=neo4j
 NEO4J_PASSWORD=password
-
-# OpenAI (for DSPy analysis)
-OPENAI_API_KEY=sk-your-key-here
-OPENAI_MODEL=gpt-4-turbo-preview
 
 # News APIs
 TAVILY_API_KEY=tvly-your-key-here

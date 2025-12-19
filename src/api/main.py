@@ -87,6 +87,9 @@ def create_app() -> FastAPI:
     @app.get("/health", response_model=HealthResponse, tags=["health"])
     async def health_check():
         """Check API health status."""
+        from src.config import get_settings
+        settings = get_settings()
+        
         return HealthResponse(
             status="healthy",
             version="0.1.0",
@@ -95,7 +98,23 @@ def create_app() -> FastAPI:
                 "api": "running",
                 "database": "not_configured",
                 "monitoring": "active",
+                "llm_provider": settings.llm_provider.value,
+                "llm_model": settings.current_model,
             },
+        )
+
+    # LLM status endpoint
+    @app.get("/llm/status", tags=["llm"])
+    async def llm_status():
+        """Check LLM provider status and availability."""
+        from src.llm import check_llm_availability
+        
+        status_info = await check_llm_availability()
+        
+        return APIResponse(
+            success=status_info["available"],
+            data=status_info,
+            message="LLM provider status retrieved",
         )
 
     # Root endpoint
