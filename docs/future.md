@@ -8,10 +8,10 @@ This document outlines 10 high-impact improvements to make ChainReaction a "best
 **User Story:** *As a Supply Chain Manager, I want the system to suggest specific mitigation strategies (like activating backup suppliers or re-routing shipments) so I can respond to disruptions in minutes instead of hours.*
 
 **Task List:**
-- [ ] Create a new DSPy module `MitigationSuggester`.
-- [ ] Integrate historical mitigation data into the prompt context.
-- [ ] Add a "Suggest Actions" button to the Risk Detail panel in the UI.
-- [ ] Implement a feedback loop where users can "Accept" or "Reject" suggestions to improve future AI prompts.
+- [x] Create a new DSPy module `MitigationSuggester`.
+- [x] Integrate historical mitigation data into the prompt context.
+- [x] Add a "Suggest Actions" button to the Risk Detail panel in the UI.
+- [x] Implement a feedback loop where users can "Accept" or "Reject" suggestions to improve future AI prompts.
 
 ## 2. 🗺️ Advanced Geographical Risk Heatmap
 **User Story:** *As a Logistics Coordinator, I want to see a real-world map with risk heatmaps so I can visualize how regional events (like hurricanes or strikes) geographically cluster around my suppliers.*
