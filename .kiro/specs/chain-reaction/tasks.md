@@ -222,25 +222,25 @@
     - Add bulk update and batch operation capabilities
     - _Requirements: 3.2, 3.3_
 
-- [ ] 12. Add risk prioritization and reporting
-  - [ ] 12.1 Implement risk prioritization algorithms
+- [x] 12. Add risk prioritization and reporting
+  - [x] 12.1 Implement risk prioritization algorithms
     - Create severity and timeline-based sorting for risk events
     - Add multi-criteria prioritization with configurable weights
     - Implement risk aggregation for products with multiple threats
     - Add "no risks found" confirmation response for stable supply chains
     - _Requirements: 1.3, 1.4, 6.4_
 
-  - [ ] 12.2 Write property test for risk prioritization consistency
+  - [x] 12.2 Write property test for risk prioritization consistency
     - **Property 2: Risk prioritization consistency**
     - **Validates: Requirements 1.3**
 
-  - [ ] 12.3 Build comprehensive impact reporting
+  - [x] 12.3 Build comprehensive impact reporting
     - Create detailed impact reports with timeline estimates
     - Implement report generation for various stakeholder needs
     - Add export capabilities for reports in multiple formats
     - _Requirements: 6.5, 1.2_
 
-  - [ ] 12.4 Write property test for report completeness
+  - [x] 12.4 Write property test for report completeness
     - **Property 15: Impact report completeness**
     - **Validates: Requirements 6.5**
 

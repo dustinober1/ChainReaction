@@ -17,6 +17,21 @@ from src.analysis.training import (
     TrainingDataset,
     TrainingDataManager,
 )
+from src.analysis.prioritization import (
+    RiskPrioritizer,
+    PriorityWeights,
+    PrioritizedRisk,
+    sort_by_severity,
+    sort_by_timeline,
+    sort_by_affected_count,
+)
+from src.analysis.reporting import (
+    ReportGenerator,
+    ImpactReport,
+    TimelineEstimate,
+    MitigationOption,
+    ReportFormat,
+)
 
 __all__ = [
     # Signatures
@@ -36,4 +51,18 @@ __all__ = [
     "TrainingExample",
     "TrainingDataset",
     "TrainingDataManager",
+    # Prioritization
+    "RiskPrioritizer",
+    "PriorityWeights",
+    "PrioritizedRisk",
+    "sort_by_severity",
+    "sort_by_timeline",
+    "sort_by_affected_count",
+    # Reporting
+    "ReportGenerator",
+    "ImpactReport",
+    "TimelineEstimate",
+    "MitigationOption",
+    "ReportFormat",
 ]
+
