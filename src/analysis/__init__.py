@@ -114,6 +114,21 @@ from src.analysis.performance import (
     ResourceLimits,
     RetentionPolicy,
 )
+from src.analysis.accessibility import (
+    AccessibilityManager,
+    ColorContrastChecker,
+    KeyboardNavigationManager,
+    DataDictionaryGenerator,
+    WCAGLevel,
+    ContrastRequirement,
+    KeyboardAction,
+    DataType,
+    ColorPair,
+    KeyboardShortcut,
+    FocusableElement,
+    FieldDefinition,
+    DataDictionary,
+)
 
 __all__ = [
     # Signatures
@@ -221,4 +236,18 @@ __all__ = [
     "ResourceType",
     "ResourceLimits",
     "RetentionPolicy",
+    # Accessibility
+    "AccessibilityManager",
+    "ColorContrastChecker",
+    "KeyboardNavigationManager",
+    "DataDictionaryGenerator",
+    "WCAGLevel",
+    "ContrastRequirement",
+    "KeyboardAction",
+    "DataType",
+    "ColorPair",
+    "KeyboardShortcut",
+    "FocusableElement",
+    "FieldDefinition",
+    "DataDictionary",
 ]
