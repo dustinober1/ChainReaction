@@ -31,6 +31,7 @@ def create_app() -> FastAPI:
     """Create and configure the FastAPI application."""
     from src.api.routes import router as main_router
     from src.api.webhooks_routes import router as webhook_router
+    from src.api.routes_v2 import router as v2_router
 
     app = FastAPI(
         title="ChainReaction API",
@@ -134,6 +135,7 @@ def create_app() -> FastAPI:
     # Include routers
     app.include_router(main_router, prefix="/api/v1")
     app.include_router(webhook_router, prefix="/api/v1/webhooks", tags=["webhooks"])
+    app.include_router(v2_router, prefix="/api/v2")
 
     return app
 

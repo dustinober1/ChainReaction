@@ -278,36 +278,37 @@ Each task builds incrementally on previous work, with property-based tests valid
     - **Property 20: Saved Search Reusability**
     - **Validates: Requirements 4.5**
 
-- [ ] 8. Enhanced REST API
-  - [ ] 8.1 Add resilience metrics endpoints
-    - GET /api/v1/resilience/{entity_id}
-    - GET /api/v1/resilience/{entity_id}/history
-    - GET /api/v1/resilience/portfolio
+- [x] 8. Enhanced REST API
+  - [x] 8.1 Add resilience metrics endpoints
+    - GET /api/v2/resilience/{entity_id}
+    - GET /api/v2/resilience/{entity_id}/history
+    - GET /api/v2/resilience/portfolio
     - _Requirements: 3.1, 3.2, 3.3_
 
-  - [ ] 8.2 Add advanced search endpoints
-    - POST /api/v1/search (full-text and filters)
-    - GET /api/v1/search/saved
-    - POST /api/v1/search/save
+  - [x] 8.2 Add advanced search endpoints
+    - POST /api/v2/search (full-text and filters)
+    - GET /api/v2/search/saved
+    - POST /api/v2/search/save
     - _Requirements: 4.1, 4.2, 4.3_
 
-  - [ ] 8.3 Add mitigation endpoints
-    - GET /api/v1/risks/{risk_id}/mitigations
-    - POST /api/v1/mitigations/{id}/simulate
-    - POST /api/v1/mitigations/{id}/track-outcome
+  - [x] 8.3 Add mitigation endpoints
+    - GET /api/v2/mitigations/risks/{risk_id}
+    - POST /api/v2/mitigations/{id}/simulate
+    - POST /api/v2/mitigations/{id}/track-outcome
     - _Requirements: 5.1, 5.2, 5.3_
 
-  - [ ] 8.4 Add alert management endpoints
-    - POST /api/v1/alerts/rules
-    - PATCH /api/v1/alerts/rules/{rule_id}
-    - DELETE /api/v1/alerts/rules/{rule_id}
+  - [x] 8.4 Add alert management endpoints
+    - POST /api/v2/alerts/rules
+    - PATCH /api/v2/alerts/rules/{rule_id}
+    - DELETE /api/v2/alerts/rules/{rule_id}
     - _Requirements: 2.1, 2.2_
 
-  - [ ] 8.5 Add predictive analytics endpoints
-    - GET /api/v1/analytics/patterns
-    - GET /api/v1/analytics/forecasts
-    - GET /api/v1/analytics/early-warnings
+  - [x] 8.5 Add predictive analytics endpoints
+    - GET /api/v2/analytics/patterns
+    - GET /api/v2/analytics/forecasts
+    - GET /api/v2/analytics/early-warnings
     - _Requirements: 9.1, 9.2, 9.3_
+
 
 - [ ] 9. Performance Optimization
   - [ ] 9.1 Implement query caching for frequently accessed data
