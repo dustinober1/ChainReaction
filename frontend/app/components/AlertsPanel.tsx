@@ -1,5 +1,7 @@
 "use client";
 
+import { useState, useEffect } from "react";
+
 interface Alert {
     id: string;
     severity: "critical" | "high" | "medium" | "low";
@@ -13,6 +15,39 @@ interface AlertsPanelProps {
     alerts: Alert[];
     onAlertClick?: (alert: Alert) => void;
     onAcknowledge?: (alertId: string) => void;
+}
+
+// Separate component for relative time to isolate hydration
+function RelativeTime({ date }: { date: Date }) {
+    const [timeText, setTimeText] = useState<string>("");
+
+    useEffect(() => {
+        const calculateTime = () => {
+            const now = new Date();
+            const diff = now.getTime() - date.getTime();
+            const minutes = Math.floor(diff / 60000);
+            const hours = Math.floor(minutes / 60);
+
+            if (minutes < 1) return "Just now";
+            if (minutes < 60) return `${minutes}m ago`;
+            if (hours < 24) return `${hours}h ago`;
+            return date.toLocaleDateString();
+        };
+
+        setTimeText(calculateTime());
+
+        // Update every minute
+        const interval = setInterval(() => {
+            setTimeText(calculateTime());
+        }, 60000);
+
+        return () => clearInterval(interval);
+    }, [date]);
+
+    // Return empty during SSR, show time only on client
+    if (!timeText) return null;
+
+    return <>{timeText}</>;
 }
 
 export default function AlertsPanel({
@@ -48,18 +83,6 @@ export default function AlertsPanel({
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
             </svg>
         );
-    };
-
-    const formatTime = (date: Date) => {
-        const now = new Date();
-        const diff = now.getTime() - date.getTime();
-        const minutes = Math.floor(diff / 60000);
-        const hours = Math.floor(minutes / 60);
-
-        if (minutes < 1) return "Just now";
-        if (minutes < 60) return `${minutes}m ago`;
-        if (hours < 24) return `${hours}h ago`;
-        return date.toLocaleDateString();
     };
 
     const unacknowledgedCount = alerts.filter((a) => !a.acknowledged).length;
@@ -107,7 +130,7 @@ export default function AlertsPanel({
                                     <div className="flex items-center justify-between gap-2">
                                         <h3 className="text-sm font-medium truncate">{alert.title}</h3>
                                         <span className="text-xs opacity-70 whitespace-nowrap">
-                                            {formatTime(alert.timestamp)}
+                                            <RelativeTime date={alert.timestamp} />
                                         </span>
                                     </div>
                                     <p className="text-xs opacity-70 mt-1 line-clamp-2">{alert.description}</p>
@@ -131,3 +154,4 @@ export default function AlertsPanel({
         </div>
     );
 }
+

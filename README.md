@@ -180,18 +180,19 @@ Best for: Development, privacy-sensitive deployments, no API costs
 curl -fsSL https://ollama.com/install.sh | sh
 
 # 2. Pull a model
-ollama pull llama3.2
+ollama pull qwen3:1.7b
 
 # 3. Configure .env
 LLM_PROVIDER=ollama
 OLLAMA_BASE_URL=http://localhost:11434
-OLLAMA_MODEL=llama3.2
+OLLAMA_MODEL=qwen3:1.7b
 ```
 
 ### Recommended Ollama Models
 
 | Model          | Size | Quality | Speed | Best For                   |
 | -------------- | ---- | ------- | ----- | -------------------------- |
+| `qwen3:1.7b`   | 1.7B | ★★★☆☆   | ★★★★★ | Development, fast testing  |
 | `llama3.2`     | 3B   | ★★★☆☆   | ★★★★★ | Development, quick testing |
 | `llama3.1`     | 8B   | ★★★★☆   | ★★★★☆ | Balanced performance       |
 | `llama3.1:70b` | 70B  | ★★★★★   | ★★☆☆☆ | Production quality         |
@@ -228,7 +229,7 @@ OPENAI_MODEL=gpt-4-turbo-preview
 
 # Ollama (if using Ollama)
 OLLAMA_BASE_URL=http://localhost:11434
-OLLAMA_MODEL=llama3.2
+OLLAMA_MODEL=qwen3:1.7b
 
 # Neo4j Database
 NEO4J_URI=bolt://localhost:7687

@@ -47,7 +47,7 @@ class OllamaSettings(BaseSettings):
     model_config = SettingsConfigDict(env_prefix="OLLAMA_")
 
     base_url: str = Field(default="http://localhost:11434", description="Ollama server URL")
-    model: str = Field(default="llama3.2", description="Default Ollama model to use")
+    model: str = Field(default="qwen3:1.7b", description="Default Ollama model to use")
     temperature: float = Field(default=0.7, description="Temperature for generation", ge=0.0, le=2.0)
     num_ctx: int = Field(default=4096, description="Context window size", ge=512)
     timeout: int = Field(default=120, description="Request timeout in seconds", ge=10)
