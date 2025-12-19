@@ -101,6 +101,19 @@ from src.analysis.search import (
     SavedSearch,
     EntitySearchResult,
 )
+from src.analysis.performance import (
+    PerformanceManager,
+    QueryCache,
+    BatchProcessor,
+    ResourceMonitor,
+    RetentionManager,
+    ScalingManager,
+    CacheStrategy,
+    RetentionPeriod,
+    ResourceType,
+    ResourceLimits,
+    RetentionPolicy,
+)
 
 __all__ = [
     # Signatures
@@ -196,4 +209,16 @@ __all__ = [
     "SearchResult",
     "SavedSearch",
     "EntitySearchResult",
+    # Performance
+    "PerformanceManager",
+    "QueryCache",
+    "BatchProcessor",
+    "ResourceMonitor",
+    "RetentionManager",
+    "ScalingManager",
+    "CacheStrategy",
+    "RetentionPeriod",
+    "ResourceType",
+    "ResourceLimits",
+    "RetentionPolicy",
 ]
