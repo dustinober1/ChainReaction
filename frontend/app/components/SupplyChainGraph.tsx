@@ -187,118 +187,155 @@ export default function SupplyChainGraph({
     return (
         <div ref={containerRef} className="w-full h-full graph-container relative">
             {/* World Map Background */}
-            <div className="absolute inset-0 overflow-hidden opacity-20">
+            <div className="absolute inset-0 overflow-hidden">
                 <svg
                     viewBox="0 0 1000 500"
                     className="w-full h-full"
                     preserveAspectRatio="xMidYMid slice"
                 >
-                    {/* Simplified world map paths */}
+                    {/* Background gradient */}
                     <defs>
                         <linearGradient id="mapGradient" x1="0%" y1="0%" x2="100%" y2="100%">
-                            <stop offset="0%" stopColor="#3b82f6" stopOpacity="0.3" />
-                            <stop offset="100%" stopColor="#8b5cf6" stopOpacity="0.3" />
+                            <stop offset="0%" stopColor="#1e3a5f" stopOpacity="0.8" />
+                            <stop offset="100%" stopColor="#1a1a2e" stopOpacity="0.8" />
                         </linearGradient>
+                        <linearGradient id="landGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                            <stop offset="0%" stopColor="#3b82f6" stopOpacity="0.4" />
+                            <stop offset="100%" stopColor="#6366f1" stopOpacity="0.3" />
+                        </linearGradient>
+                        <filter id="glow">
+                            <feGaussianBlur stdDeviation="3" result="coloredBlur" />
+                            <feMerge>
+                                <feMergeNode in="coloredBlur" />
+                                <feMergeNode in="SourceGraphic" />
+                            </feMerge>
+                        </filter>
                     </defs>
 
-                    {/* Grid lines */}
-                    {[...Array(10)].map((_, i) => (
+                    {/* Ocean background */}
+                    <rect x="0" y="0" width="1000" height="500" fill="url(#mapGradient)" />
+
+                    {/* Grid lines - latitude */}
+                    {[...Array(9)].map((_, i) => (
                         <line
-                            key={`h-${i}`}
+                            key={`lat-${i}`}
                             x1="0"
-                            y1={i * 50}
+                            y1={(i + 1) * 50}
                             x2="1000"
-                            y2={i * 50}
+                            y2={(i + 1) * 50}
                             stroke="#3b82f6"
-                            strokeOpacity="0.1"
+                            strokeOpacity="0.15"
                             strokeWidth="0.5"
+                            strokeDasharray="5,5"
                         />
                     ))}
-                    {[...Array(20)].map((_, i) => (
+                    {/* Grid lines - longitude */}
+                    {[...Array(19)].map((_, i) => (
                         <line
-                            key={`v-${i}`}
-                            x1={i * 50}
+                            key={`lon-${i}`}
+                            x1={(i + 1) * 50}
                             y1="0"
-                            x2={i * 50}
+                            x2={(i + 1) * 50}
                             y2="500"
                             stroke="#3b82f6"
-                            strokeOpacity="0.1"
+                            strokeOpacity="0.15"
                             strokeWidth="0.5"
+                            strokeDasharray="5,5"
                         />
                     ))}
 
                     {/* Simplified continent shapes */}
                     {/* North America */}
                     <path
-                        d="M150,80 Q200,60 250,80 Q300,100 280,150 Q260,200 200,220 Q150,200 120,150 Q100,120 150,80"
-                        fill="url(#mapGradient)"
-                        stroke="#3b82f6"
-                        strokeWidth="0.5"
-                        strokeOpacity="0.3"
+                        d="M80,70 L120,50 L180,55 L220,70 L250,90 L270,120 L260,160 L240,190 L200,210 L160,200 L130,180 L100,150 L80,120 L75,95 Z"
+                        fill="url(#landGradient)"
+                        stroke="#60a5fa"
+                        strokeWidth="1.5"
+                        strokeOpacity="0.6"
                     />
 
                     {/* South America */}
                     <path
-                        d="M220,250 Q260,230 280,260 Q300,320 280,380 Q260,420 230,400 Q200,360 210,300 Q210,260 220,250"
-                        fill="url(#mapGradient)"
-                        stroke="#3b82f6"
-                        strokeWidth="0.5"
-                        strokeOpacity="0.3"
+                        d="M200,230 L230,220 L260,240 L280,280 L285,330 L275,380 L250,420 L220,430 L195,400 L185,350 L190,290 L195,250 Z"
+                        fill="url(#landGradient)"
+                        stroke="#60a5fa"
+                        strokeWidth="1.5"
+                        strokeOpacity="0.6"
                     />
 
                     {/* Europe */}
                     <path
-                        d="M450,80 Q500,60 550,80 Q580,100 560,140 Q540,160 500,150 Q460,140 450,120 Q440,100 450,80"
-                        fill="url(#mapGradient)"
-                        stroke="#3b82f6"
-                        strokeWidth="0.5"
-                        strokeOpacity="0.3"
+                        d="M440,60 L480,50 L530,55 L570,70 L590,100 L580,130 L550,150 L510,145 L470,135 L445,115 L435,85 Z"
+                        fill="url(#landGradient)"
+                        stroke="#60a5fa"
+                        strokeWidth="1.5"
+                        strokeOpacity="0.6"
                     />
 
                     {/* Africa */}
                     <path
-                        d="M480,180 Q530,160 560,200 Q580,260 560,320 Q530,380 490,360 Q450,320 460,260 Q470,200 480,180"
-                        fill="url(#mapGradient)"
-                        stroke="#3b82f6"
-                        strokeWidth="0.5"
-                        strokeOpacity="0.3"
+                        d="M460,160 L510,150 L560,170 L590,220 L600,280 L585,340 L550,390 L500,400 L460,370 L440,320 L435,260 L445,200 Z"
+                        fill="url(#landGradient)"
+                        stroke="#60a5fa"
+                        strokeWidth="1.5"
+                        strokeOpacity="0.6"
                     />
 
                     {/* Asia */}
                     <path
-                        d="M580,80 Q700,60 820,100 Q880,140 860,200 Q800,240 720,220 Q640,200 600,160 Q560,120 580,80"
-                        fill="url(#mapGradient)"
-                        stroke="#3b82f6"
-                        strokeWidth="0.5"
-                        strokeOpacity="0.3"
+                        d="M580,50 L650,40 L740,50 L820,80 L880,120 L920,170 L900,220 L840,250 L760,240 L680,210 L620,170 L590,120 L575,80 Z"
+                        fill="url(#landGradient)"
+                        stroke="#60a5fa"
+                        strokeWidth="1.5"
+                        strokeOpacity="0.6"
                     />
 
                     {/* Australia */}
                     <path
-                        d="M780,320 Q840,300 880,340 Q900,380 860,400 Q820,410 780,380 Q760,350 780,320"
-                        fill="url(#mapGradient)"
-                        stroke="#3b82f6"
-                        strokeWidth="0.5"
-                        strokeOpacity="0.3"
+                        d="M760,310 L820,290 L880,310 L910,360 L890,410 L840,430 L780,420 L750,380 L755,340 Z"
+                        fill="url(#landGradient)"
+                        stroke="#60a5fa"
+                        strokeWidth="1.5"
+                        strokeOpacity="0.6"
                     />
 
+                    {/* Connection lines between supplier locations */}
+                    <line x1="510" y1="95" x2="780" y2="150" stroke="#60a5fa" strokeWidth="0.5" strokeOpacity="0.3" strokeDasharray="4,4" />
+                    <line x1="780" y1="150" x2="800" y2="175" stroke="#60a5fa" strokeWidth="0.5" strokeOpacity="0.3" strokeDasharray="4,4" />
+                    <line x1="800" y1="175" x2="760" y2="200" stroke="#60a5fa" strokeWidth="0.5" strokeOpacity="0.3" strokeDasharray="4,4" />
+
                     {/* Location markers for suppliers */}
-                    {/* Taiwan */}
-                    <circle cx="800" cy="180" r="4" fill="#ef4444" opacity="0.6">
-                        <animate attributeName="opacity" values="0.6;1;0.6" dur="2s" repeatCount="indefinite" />
+                    {/* Taiwan - pulsing danger */}
+                    <circle cx="800" cy="175" r="8" fill="#ef4444" opacity="0.2" filter="url(#glow)">
+                        <animate attributeName="r" values="8;12;8" dur="2s" repeatCount="indefinite" />
+                        <animate attributeName="opacity" values="0.2;0.4;0.2" dur="2s" repeatCount="indefinite" />
+                    </circle>
+                    <circle cx="800" cy="175" r="5" fill="#ef4444" opacity="0.9">
+                        <animate attributeName="opacity" values="0.9;1;0.9" dur="1.5s" repeatCount="indefinite" />
                     </circle>
 
-                    {/* Germany */}
-                    <circle cx="510" cy="100" r="3" fill="#10b981" opacity="0.6" />
+                    {/* Germany - stable */}
+                    <circle cx="510" cy="95" r="6" fill="#10b981" opacity="0.2" filter="url(#glow)" />
+                    <circle cx="510" cy="95" r="4" fill="#10b981" opacity="0.9" />
 
                     {/* Vietnam */}
-                    <circle cx="760" cy="210" r="3" fill="#3b82f6" opacity="0.6" />
+                    <circle cx="760" cy="200" r="5" fill="#3b82f6" opacity="0.2" filter="url(#glow)" />
+                    <circle cx="760" cy="200" r="3" fill="#3b82f6" opacity="0.9" />
 
-                    {/* China/Shanghai */}
-                    <circle cx="780" cy="160" r="3" fill="#f59e0b" opacity="0.6" />
+                    {/* China/Shanghai - warning */}
+                    <circle cx="780" cy="150" r="6" fill="#f59e0b" opacity="0.2" filter="url(#glow)" />
+                    <circle cx="780" cy="150" r="4" fill="#f59e0b" opacity="0.9" />
 
                     {/* Korea */}
-                    <circle cx="820" cy="140" r="3" fill="#3b82f6" opacity="0.6" />
+                    <circle cx="820" cy="135" r="5" fill="#3b82f6" opacity="0.2" filter="url(#glow)" />
+                    <circle cx="820" cy="135" r="3" fill="#3b82f6" opacity="0.9" />
+
+                    {/* Location labels */}
+                    <text x="800" y="160" fill="#ef4444" fontSize="8" textAnchor="middle" opacity="0.8">Taiwan</text>
+                    <text x="510" y="82" fill="#10b981" fontSize="8" textAnchor="middle" opacity="0.8">Germany</text>
+                    <text x="760" y="215" fill="#3b82f6" fontSize="8" textAnchor="middle" opacity="0.8">Vietnam</text>
+                    <text x="780" y="138" fill="#f59e0b" fontSize="8" textAnchor="middle" opacity="0.8">Shanghai</text>
+                    <text x="820" y="150" fill="#3b82f6" fontSize="8" textAnchor="middle" opacity="0.8">Korea</text>
                 </svg>
             </div>
 
