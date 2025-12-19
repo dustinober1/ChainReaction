@@ -22,6 +22,7 @@ ChainReaction is an intelligent supply chain risk monitoring platform that combi
 ## 📋 Table of Contents
 
 - [Quick Start](#-quick-start)
+- [Docker Deployment](#-docker-deployment)
 - [Architecture](#-architecture)
 - [Installation](#-installation)
 - [LLM Configuration](#-llm-configuration)
@@ -57,6 +58,99 @@ python -m uvicorn src.api.main:app --reload
 cd frontend
 npm install
 npm run dev
+```
+
+## 🐳 Docker Deployment
+
+### Quick Start with Docker
+
+The fastest way to get ChainReaction running:
+
+```bash
+# Clone and navigate to the project
+git clone https://github.com/dustinober1/ChainReaction.git
+cd ChainReaction
+
+# Copy environment template
+cp .env.example .env
+# Edit .env with your API keys
+
+# Build and start all services
+docker compose up --build -d
+
+# View logs
+docker compose logs -f
+
+# Access the application
+# Frontend: http://localhost:3000
+# Backend API: http://localhost:8000
+# Neo4j Browser: http://localhost:7474
+```
+
+### Docker Services
+
+| Service    | Port       | Description       |
+| ---------- | ---------- | ----------------- |
+| `frontend` | 3000       | Next.js dashboard |
+| `backend`  | 8000       | FastAPI REST API  |
+| `neo4j`    | 7474, 7687 | Graph database    |
+
+### Docker Commands
+
+```bash
+# Build images
+docker compose build
+
+# Start all services
+docker compose up -d
+
+# Stop all services
+docker compose down
+
+# View logs (all services)
+docker compose logs -f
+
+# View specific service logs
+docker compose logs -f backend
+docker compose logs -f frontend
+
+# Restart a service
+docker compose restart backend
+
+# Clean up (including volumes)
+docker compose down -v --rmi local
+```
+
+### Using Make (Convenience Commands)
+
+```bash
+make docker-build     # Build all images
+make docker-up        # Start all services
+make docker-down      # Stop all services
+make docker-logs      # View all logs
+make docker-clean     # Remove containers and volumes
+```
+
+### Environment Variables
+
+Create a `.env` file in the project root:
+
+```bash
+# Required for LLM functionality
+LLM_PROVIDER=openai
+OPENAI_API_KEY=sk-your-api-key
+
+# Or use Ollama (local)
+LLM_PROVIDER=ollama
+OLLAMA_BASE_URL=http://host.docker.internal:11434
+
+# Neo4j (defaults work out of the box)
+NEO4J_USERNAME=neo4j
+NEO4J_PASSWORD=password
+
+# API Security
+SECRET_KEY=your-secret-key
+API_KEY=your-api-key
 ```
 
 ## 🏗️ Architecture
