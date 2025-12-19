@@ -20,14 +20,14 @@ This document outlines 10 high-impact improvements to make ChainReaction a "best
 - [x] Replace or augment the current map with a Mapbox or Leaflet integration.
 - [x] Implement a "Risk Heatmap" layer based on aggregated entity risk scores in a region.
 - [x] Add geographic polygons to represent weather event footprints (e.g., hurricane paths).
-- [ ] Enable map-based filtering of the supply chain graph.
+- [x] Enable map-based filtering of the supply chain graph.
 
 ## 3. 📈 Historical Risk Analytics & Trends
 **User Story:** *As an Executive, I want to see how our supply chain risk profile has evolved over the last 12 months so I can measure the effectiveness of our resilience investments.*
 
 **Task List:**
 - [ ] Implement a Time-Series database (like TimescaleDB) or use Neo4j properties to track historical risk scores.
-- [ ] Add an "Analytics" tab to the dashboard with Chart.js or Recharts.
+- [x] Add an "Analytics" tab to the dashboard with Chart.js or Recharts.
 - [ ] Create "Risk Velocity" metrics (how fast a risk is escalating).
 - [ ] Export monthly risk PDF reports for stakeholders.
 

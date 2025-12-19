@@ -1,12 +1,13 @@
 "use client";
 
-import { useState, useCallback, useEffect } from "react";
+import { useState, useCallback, useEffect, useMemo } from "react";
 import dynamic from "next/dynamic";
 import ChatInterface, { ChatMessage } from "./components/ChatInterface";
 import NodeDetailsPanel from "./components/NodeDetailsPanel";
 import AlertsPanel from "./components/AlertsPanel";
 import NotificationsPanel from "./components/NotificationsPanel";
 import SettingsPanel from "./components/SettingsPanel";
+import AnalyticsPanel from "./components/AnalyticsPanel";
 import { GraphNode, GraphData } from "./components/SupplyChainGraph";
 
 // Dynamically import the graph to avoid SSR issues
@@ -160,12 +161,13 @@ export default function Dashboard() {
   const [graphData, setGraphData] = useState<GraphData>({ nodes: [], links: [] });
   const [selectedNode, setSelectedNode] = useState<GraphNode | null>(null);
   const [highlightedNodes, setHighlightedNodes] = useState<Set<string>>(new Set());
+  const [filteredNodeIds, setFilteredNodeIds] = useState<Set<string> | null>(null);
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [alerts, setAlerts] = useState(demoAlerts);
   const [showNotifications, setShowNotifications] = useState(false);
   const [showSettings, setShowSettings] = useState(false);
-  const [viewMode, setViewMode] = useState<"graph" | "map">("graph");
+  const [viewMode, setViewMode] = useState<"graph" | "map" | "analytics">("graph");
   const [stats, setStats] = useState({
     suppliers: 5,
     components: 6,
@@ -187,6 +189,57 @@ export default function Dashboard() {
   const handleNodeHover = useCallback((node: GraphNode | null) => {
     // Could implement hover preview
   }, []);
+
+  const handleMapFilter = useCallback((visibleIds: string[]) => {
+    const includedIds = new Set(visibleIds);
+    let changed = true;
+
+    // Iteratively find related nodes (downstream components/products and upstream risks)
+    while (changed) {
+      changed = false;
+      graphData.links.forEach((link: any) => {
+        const sourceId = typeof link.source === 'object' ? (link.source as any).id : link.source;
+        const targetId = typeof link.target === 'object' ? (link.target as any).id : link.target;
+
+        // Downstream: Supplier -> Component -> Product
+        if (includedIds.has(sourceId) && !includedIds.has(targetId)) {
+          // Check if link is SUPPLIES or PART_OF
+          if (link.type === "SUPPLIES" || link.type === "PART_OF") {
+            includedIds.add(targetId);
+            changed = true;
+          }
+        }
+
+        // Upstream Risks: Risk -> Supplier
+        if (includedIds.has(targetId) && !includedIds.has(sourceId)) {
+          if (link.type === "AFFECTS") {
+            includedIds.add(sourceId);
+            changed = true;
+          }
+        }
+      });
+    }
+
+    setFilteredNodeIds(includedIds);
+    setViewMode("graph"); // Switch to graph view to see results
+  }, [graphData]);
+
+  const handleClearFilter = useCallback(() => {
+    setFilteredNodeIds(null);
+  }, []);
+
+  const displayGraphData = useMemo(() => {
+    if (!filteredNodeIds) return graphData;
+
+    const nodes = graphData.nodes.filter(n => filteredNodeIds.has(n.id));
+    const links = graphData.links.filter(l => {
+      const sourceId = typeof l.source === 'object' ? (l.source as any).id : l.source;
+      const targetId = typeof l.target === 'object' ? (l.target as any).id : l.target;
+      return filteredNodeIds.has(sourceId as string) && filteredNodeIds.has(targetId as string);
+    });
+
+    return { nodes, links };
+  }, [graphData, filteredNodeIds]);
 
   const handleSendMessage = useCallback(async (message: string) => {
     const userMessage: ChatMessage = {
@@ -474,21 +527,44 @@ export default function Dashboard() {
               >
                 Geo Map
               </button>
+              <button
+                onClick={() => setViewMode("analytics")}
+                className={`px-3 py-1.5 text-xs font-medium rounded-md transition ${viewMode === "analytics" ? "bg-blue-600 text-white shadow-lg shadow-blue-500/20" : "text-gray-400 hover:text-white hover:bg-white/5"}`}
+              >
+                Analytics
+              </button>
+
+              {filteredNodeIds && (
+                <button
+                  onClick={handleClearFilter}
+                  className="ml-2 px-3 py-1.5 text-xs font-medium rounded-md text-red-400 hover:text-white hover:bg-red-500/20 border border-red-500/30 transition flex items-center gap-1"
+                >
+                  <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                  </svg>
+                  Clear Filter
+                </button>
+              )}
             </div>
 
-            {viewMode === "graph" ? (
+            {viewMode === "graph" && (
               <SupplyChainGraph
-                data={graphData}
+                data={displayGraphData}
                 onNodeClick={handleNodeClick}
                 onNodeHover={handleNodeHover}
                 selectedNode={selectedNode?.id}
                 highlightedNodes={highlightedNodes}
               />
-            ) : (
+            )}
+            {viewMode === "map" && (
               <RiskMap
                 nodes={graphData.nodes}
                 onNodeClick={handleNodeClick}
+                onFilter={handleMapFilter}
               />
+            )}
+            {viewMode === "analytics" && (
+              <AnalyticsPanel />
             )}
 
             {/* Node Details Panel */}

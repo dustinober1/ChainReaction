@@ -19,7 +19,51 @@ function MapController({ center }: { center: [number, number] }) {
     return null;
 }
 
-export default function RiskMap({ nodes, onNodeClick }: RiskMapProps) {
+// Control component for filtering
+function MapFilterControl({
+    nodes,
+    onFilter
+}: {
+    nodes: GraphNode[],
+    onFilter?: (ids: string[]) => void
+}) {
+    const map = useMap();
+
+    const handleFilterClick = () => {
+        if (!onFilter) return;
+
+        const bounds = map.getBounds();
+        const visibleNodes = nodes.filter(n => {
+            if (n.lat !== undefined && n.lng !== undefined) {
+                return bounds.contains([n.lat, n.lng]);
+            }
+            return false;
+        });
+
+        const visibleIds = visibleNodes.map(n => n.id);
+
+        // Also include dependent nodes (components/products) if their suppliers/components are visible?
+        // For now, let's just send the visible geographical nodes.
+        // The parent can decide to include downstream nodes.
+        onFilter(visibleIds);
+    };
+
+    return (
+        <div className="leaflet-bottom leaflet-left pointer-events-auto">
+            <div className="leaflet-control leaflet-bar">
+                <button
+                    onClick={handleFilterClick}
+                    className="bg-gray-900 border border-white/20 text-white px-3 py-1.5 text-xs font-bold hover:bg-gray-800 transition shadow-lg backdrop-blur-md rounded"
+                    title="Show only nodes in current map view in the graph"
+                >
+                    Filter Graph to View
+                </button>
+            </div>
+        </div>
+    );
+}
+
+export default function RiskMap({ nodes, onNodeClick, onFilter }: RiskMapProps & { onFilter?: (ids: string[]) => void }) {
     // Default center (Asia)
     const defaultCenter: [number, number] = [25, 110];
 
@@ -48,6 +92,8 @@ export default function RiskMap({ nodes, onNodeClick }: RiskMapProps) {
                     attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>'
                     url="https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png"
                 />
+
+                {onFilter && <MapFilterControl nodes={nodes} onFilter={onFilter} />}
 
                 {/* Simulated Weather Event: Super Typhoon approaching Taiwan */}
                 <Polygon
