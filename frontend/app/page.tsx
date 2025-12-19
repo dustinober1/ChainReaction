@@ -25,33 +25,19 @@ const SupplyChainGraph = dynamic(
   }
 );
 
-// Demo data - Expanded 10x for realistic supply chain complexity
+// Demo data
 const generateDemoData = (): GraphData => {
   const nodes: GraphNode[] = [];
   const links: any[] = [];
 
-  // 50 Suppliers across diverse global locations
-  const locations = ["Taiwan", "Vietnam", "Germany", "China", "Korea", "Japan", "USA", "Mexico", "India", "Thailand"];
-  const supplierNames = [
-    "Taiwan Semi Co.", "Vietnam Electronics", "German Precision", "Shanghai Components", "Korean Chips Ltd",
-    "Tokyo Microelectronics", "Texas Instruments", "Guadalajara Tech", "Bangalore Silicon", "Bangkok Manufacturing",
-    "Shenzhen Digital", "Munich Engineering", "Singapore Semiconductors", "Philippines Assembly", "Malaysia Precision",
-    "Czech Components", "Poland Electronics", "Hungary Motors", "Romania Tech", "Bulgaria Manufacturing",
-    "Netherlands Optics", "Belgium Sensors", "France Automotive", "Italy Mechanics", "Spain Electronics",
-    "UK Precision", "Ireland Tech", "Sweden Components", "Finland Sensors", "Norway Marine",
-    "Denmark Wind", "Austria Motors", "Switzerland Precision", "Canada Tech", "Brazil Manufacturing",
-    "Argentina Electronics", "Chile Mining", "Peru Metals", "Colombia Tech", "Ecuador Manufacturing",
-    "Costa Rica Components", "Panama Logistics", "Jamaica Assembly", "Trinidad Tech", "Bahamas Electronics",
-    "New Zealand Precision", "Australia Mining", "South Africa Tech", "Egypt Manufacturing", "Morocco Electronics"
+  // Suppliers
+  const suppliers = [
+    { id: "SUP-001", name: "Taiwan Semi Co.", location: "Taiwan", riskScore: 75, isAtRisk: true },
+    { id: "SUP-002", name: "Vietnam Electronics", location: "Vietnam", riskScore: 30 },
+    { id: "SUP-003", name: "German Precision", location: "Germany", riskScore: 15 },
+    { id: "SUP-004", name: "Shanghai Components", location: "China", riskScore: 45, isAtRisk: true },
+    { id: "SUP-005", name: "Korean Chips Ltd", location: "Korea", riskScore: 20 },
   ];
-
-  const suppliers = supplierNames.map((name, i) => ({
-    id: `SUP-${String(i + 1).padStart(3, "0")}`,
-    name,
-    location: locations[i % locations.length],
-    riskScore: Math.floor(Math.random() * 60) + 15,
-    isAtRisk: i < 8 || Math.random() > 0.7,
-  }));
 
   suppliers.forEach((s) => {
     nodes.push({
@@ -65,27 +51,15 @@ const generateDemoData = (): GraphData => {
     });
   });
 
-  // 60 Components across various categories
-  const componentCategories = [
-    "CPU", "GPU", "Memory", "Storage", "Display", "Battery", "Sensor", "Motor", "PCB", "Chassis",
-    "Power Supply", "Cooling", "Antenna", "Camera", "Speaker", "Microphone", "Connector", "Cable", "Capacitor", "Resistor"
+  // Components
+  const components = [
+    { id: "COMP-001", name: "CPU Unit A", suppliers: ["SUP-001", "SUP-005"], riskScore: 60, isAtRisk: true },
+    { id: "COMP-002", name: "Memory Module", suppliers: ["SUP-001", "SUP-004"], riskScore: 55, isAtRisk: true },
+    { id: "COMP-003", name: "Display Panel", suppliers: ["SUP-002"], riskScore: 25 },
+    { id: "COMP-004", name: "Power Controller", suppliers: ["SUP-003"], riskScore: 10 },
+    { id: "COMP-005", name: "Sensor Array", suppliers: ["SUP-002", "SUP-004"], riskScore: 40 },
+    { id: "COMP-006", name: "Battery Pack", suppliers: ["SUP-003", "SUP-005"], riskScore: 15 },
   ];
-
-  const components = Array.from({ length: 60 }, (_, i) => {
-    const category = componentCategories[i % componentCategories.length];
-    const supplierCount = Math.floor(Math.random() * 3) + 1;
-    const supplierIndices = Array.from({ length: supplierCount }, () =>
-      Math.floor(Math.random() * 50)
-    ).filter((v, idx, arr) => arr.indexOf(v) === idx);
-
-    return {
-      id: `COMP-${String(i + 1).padStart(3, "0")}`,
-      name: `${category} Unit ${String.fromCharCode(65 + (i % 26))}${Math.floor(i / 26) || ""}`,
-      suppliers: supplierIndices.map(idx => `SUP-${String(idx + 1).padStart(3, "0")}`),
-      riskScore: Math.floor(Math.random() * 50) + 10,
-      isAtRisk: Math.random() > 0.6,
-    };
-  });
 
   components.forEach((c) => {
     nodes.push({
@@ -101,30 +75,13 @@ const generateDemoData = (): GraphData => {
     });
   });
 
-  // 40 Products across product lines
-  const productLines = [
-    "Smartphone Pro", "Tablet Ultra", "Smart Watch", "Laptop Elite", "Desktop Powerhouse",
-    "Gaming Console", "Smart Speaker", "Smart Display", "Drone Professional", "VR Headset",
-    "Smart TV", "Streaming Device", "Security Camera", "Smart Doorbell", "Robot Vacuum",
-    "Electric Scooter", "E-Bike", "Smart Thermostat", "Air Purifier", "Smart Lock"
+  // Products
+  const products = [
+    { id: "PROD-001", name: "Smartphone Pro", components: ["COMP-001", "COMP-002", "COMP-003"], riskScore: 70, isAtRisk: true },
+    { id: "PROD-002", name: "Tablet Ultra", components: ["COMP-001", "COMP-003", "COMP-006"], riskScore: 55, isAtRisk: true },
+    { id: "PROD-003", name: "Smart Watch", components: ["COMP-004", "COMP-005", "COMP-006"], riskScore: 25 },
+    { id: "PROD-004", name: "Laptop Elite", components: ["COMP-001", "COMP-002", "COMP-004"], riskScore: 65, isAtRisk: true },
   ];
-
-  const products = productLines.flatMap((line, lineIdx) =>
-    [1, 2].map((version) => {
-      const componentCount = Math.floor(Math.random() * 4) + 3;
-      const componentIndices = Array.from({ length: componentCount }, () =>
-        Math.floor(Math.random() * 60)
-      ).filter((v, idx, arr) => arr.indexOf(v) === idx);
-
-      return {
-        id: `PROD-${String(lineIdx * 2 + version).padStart(3, "0")}`,
-        name: `${line} ${version === 1 ? "Standard" : "Max"}`,
-        components: componentIndices.map(idx => `COMP-${String(idx + 1).padStart(3, "0")}`),
-        riskScore: Math.floor(Math.random() * 55) + 15,
-        isAtRisk: Math.random() > 0.5,
-      };
-    })
-  );
 
   products.forEach((p) => {
     nodes.push({
@@ -140,34 +97,17 @@ const generateDemoData = (): GraphData => {
     });
   });
 
-  // 10 Risk Events
-  const riskEvents = [
-    { id: "RISK-001", name: "Taiwan Typhoon", location: "Taiwan", riskScore: 95, affectedSuppliers: ["SUP-001", "SUP-011"] },
-    { id: "RISK-002", name: "China Port Congestion", location: "China", riskScore: 78, affectedSuppliers: ["SUP-004", "SUP-011"] },
-    { id: "RISK-003", name: "Vietnam Flooding", location: "Vietnam", riskScore: 72, affectedSuppliers: ["SUP-002", "SUP-020"] },
-    { id: "RISK-004", name: "Japan Earthquake", location: "Japan", riskScore: 88, affectedSuppliers: ["SUP-006", "SUP-016"] },
-    { id: "RISK-005", name: "Korea Trade Dispute", location: "Korea", riskScore: 65, affectedSuppliers: ["SUP-005", "SUP-015"] },
-    { id: "RISK-006", name: "Germany Energy Crisis", location: "Germany", riskScore: 58, affectedSuppliers: ["SUP-003", "SUP-012"] },
-    { id: "RISK-007", name: "Mexico Supply Shortage", location: "Mexico", riskScore: 52, affectedSuppliers: ["SUP-008", "SUP-018"] },
-    { id: "RISK-008", name: "India Labor Strike", location: "India", riskScore: 68, affectedSuppliers: ["SUP-009", "SUP-019"] },
-    { id: "RISK-009", name: "Thailand Political Unrest", location: "Thailand", riskScore: 45, affectedSuppliers: ["SUP-010"] },
-    { id: "RISK-010", name: "USA Semiconductor Shortage", location: "USA", riskScore: 82, affectedSuppliers: ["SUP-007", "SUP-017"] },
-  ];
-
-  riskEvents.forEach((r) => {
-    nodes.push({
-      id: r.id,
-      label: "Risk Event",
-      type: "risk",
-      name: r.name,
-      location: r.location,
-      isRiskSource: true,
-      riskScore: r.riskScore,
-    });
-    r.affectedSuppliers.forEach((s) => {
-      links.push({ source: r.id, target: s, type: "AFFECTS" });
-    });
+  // Risk Event
+  nodes.push({
+    id: "RISK-001",
+    label: "Risk Event",
+    type: "risk",
+    name: "Taiwan Typhoon",
+    location: "Taiwan",
+    isRiskSource: true,
+    riskScore: 95,
   });
+  links.push({ source: "RISK-001", target: "SUP-001", type: "AFFECTS" });
 
   return { nodes, links };
 };
@@ -183,74 +123,18 @@ const demoAlerts = [
   },
   {
     id: "ALT-002",
-    severity: "critical" as const,
-    title: "Japan Earthquake Warning",
-    description: "Major earthquake near Tokyo affecting Tokyo Microelectronics. Assessing damage.",
-    timestamp: new Date(Date.now() - 1000 * 60 * 30),
-    acknowledged: false,
-  },
-  {
-    id: "ALT-003",
     severity: "high" as const,
-    title: "China Port Congestion",
-    description: "Port delays affecting component shipments from Shanghai Components and Shenzhen Digital.",
+    title: "Shanghai Port Congestion",
+    description: "Port delays affecting component shipments from Shanghai Components.",
     timestamp: new Date(Date.now() - 1000 * 60 * 60 * 2),
     acknowledged: false,
   },
   {
-    id: "ALT-004",
-    severity: "high" as const,
-    title: "USA Semiconductor Shortage",
-    description: "Texas Instruments reporting capacity constraints. Lead times extended by 8 weeks.",
-    timestamp: new Date(Date.now() - 1000 * 60 * 60 * 4),
-    acknowledged: false,
-  },
-  {
-    id: "ALT-005",
-    severity: "high" as const,
-    title: "Vietnam Flooding",
-    description: "Flash floods affecting Vietnam Electronics facilities. Production temporarily halted.",
-    timestamp: new Date(Date.now() - 1000 * 60 * 60 * 6),
-    acknowledged: false,
-  },
-  {
-    id: "ALT-006",
+    id: "ALT-003",
     severity: "medium" as const,
-    title: "India Labor Strike",
-    description: "Bangalore Silicon workers on strike. Negotiations ongoing, 3-day impact expected.",
-    timestamp: new Date(Date.now() - 1000 * 60 * 60 * 12),
-    acknowledged: true,
-  },
-  {
-    id: "ALT-007",
-    severity: "medium" as const,
-    title: "Korea Trade Dispute",
-    description: "New trade restrictions affecting Korean Chips Ltd exports. Alternative routes being assessed.",
-    timestamp: new Date(Date.now() - 1000 * 60 * 60 * 18),
-    acknowledged: true,
-  },
-  {
-    id: "ALT-008",
-    severity: "medium" as const,
-    title: "Germany Energy Crisis",
-    description: "Energy rationing affecting German Precision and Munich Engineering operations.",
+    title: "Price Increase Notice",
+    description: "Memory module prices expected to increase 15% next quarter.",
     timestamp: new Date(Date.now() - 1000 * 60 * 60 * 24),
-    acknowledged: true,
-  },
-  {
-    id: "ALT-009",
-    severity: "low" as const,
-    title: "Mexico Supply Shortage",
-    description: "Raw material shortage affecting Guadalajara Tech. Alternative suppliers being contacted.",
-    timestamp: new Date(Date.now() - 1000 * 60 * 60 * 36),
-    acknowledged: true,
-  },
-  {
-    id: "ALT-010",
-    severity: "low" as const,
-    title: "Thailand Political Unrest",
-    description: "Minor protests near Bangkok Manufacturing. Operations normal but monitoring situation.",
-    timestamp: new Date(Date.now() - 1000 * 60 * 60 * 48),
     acknowledged: true,
   },
 ];
@@ -265,12 +149,12 @@ export default function Dashboard() {
   const [showNotifications, setShowNotifications] = useState(false);
   const [showSettings, setShowSettings] = useState(false);
   const [stats, setStats] = useState({
-    suppliers: 50,
-    components: 60,
-    products: 40,
-    activeRisks: 10,
-    atRiskProducts: 22,
-    avgRiskScore: 48,
+    suppliers: 5,
+    components: 6,
+    products: 4,
+    activeRisks: 1,
+    atRiskProducts: 3,
+    avgRiskScore: 52,
   });
 
   // Load demo data

@@ -599,33 +599,33 @@ class RiskEventGenerator:
 
 
 def generate_small_dataset(seed: int = 42) -> dict[str, Any]:
-    """Generate a small dataset for development and unit testing (~1000 nodes)."""
+    """Generate a small dataset for development and unit testing (~100 nodes)."""
     generator = SupplyChainGenerator(seed=seed)
     return generator.generate(
-        num_suppliers=200,
-        num_components=500,
-        num_products=30,
+        num_suppliers=20,
+        num_components=50,
+        num_products=3,
         supplier_redundancy=0.3,
     )
 
 
 def generate_medium_dataset(seed: int = 42) -> dict[str, Any]:
-    """Generate a medium dataset for integration testing (~50000 nodes)."""
+    """Generate a medium dataset for integration testing (~5000 nodes)."""
     generator = SupplyChainGenerator(seed=seed)
     return generator.generate(
-        num_suppliers=5000,
-        num_components=20000,
-        num_products=200,
+        num_suppliers=500,
+        num_components=2000,
+        num_products=20,
         supplier_redundancy=0.4,
     )
 
 
 def generate_large_dataset(seed: int = 42) -> dict[str, Any]:
-    """Generate a large dataset for performance testing (~500000 nodes)."""
+    """Generate a large dataset for performance testing (~50000 nodes)."""
     generator = SupplyChainGenerator(seed=seed)
     return generator.generate(
-        num_suppliers=50000,
-        num_components=200000,
-        num_products=1000,
+        num_suppliers=5000,
+        num_components=20000,
+        num_products=100,
         supplier_redundancy=0.5,
     )
