@@ -367,56 +367,57 @@ Each task builds incrementally on previous work, with property-based tests valid
   - Check API functionality
   - Ask the user if questions arise
 
-- [ ] 11. Enhanced Dashboard Components
-  - [ ] 11.1 Implement risk severity color mapping in graph visualization
+- [x] 11. Enhanced Dashboard Components
+  - [x] 11.1 Implement risk severity color mapping in graph visualization
     - Map severity levels to colors (red, orange, yellow, green)
     - Apply colors to nodes based on risk scores
     - Update colors in real-time
     - _Requirements: 1.1_
 
-  - [ ] 11.2 Write property tests for color mapping
+  - [x] 11.2 Write property tests for color mapping
     - **Property 1: Risk Severity Color Mapping**
     - **Validates: Requirements 1.1**
 
-  - [ ] 11.3 Implement interactive tooltips with entity details
+  - [x] 11.3 Implement interactive tooltips with entity details
     - Show entity details on hover
     - Display current risk score
     - List affected products
     - _Requirements: 1.2_
 
-  - [ ] 11.4 Write property tests for tooltip content
+  - [x] 11.4 Write property tests for tooltip content
     - **Property 2: Tooltip Content Completeness**
     - **Validates: Requirements 1.2**
 
-  - [ ] 11.5 Implement impact path highlighting with animation
+  - [x] 11.5 Implement impact path highlighting with animation
     - Highlight impact paths when risk detected
     - Animate edges along the path
     - Update highlighting in real-time
     - _Requirements: 1.3_
 
-  - [ ] 11.6 Write property tests for path highlighting
+  - [x] 11.6 Write property tests for path highlighting
     - **Property 3: Impact Path Highlighting**
     - **Validates: Requirements 1.3**
 
-  - [ ] 11.7 Implement severity-based filtering
+  - [x] 11.7 Implement severity-based filtering
     - Add filter controls for severity levels
     - Show/hide nodes based on filter
     - Update graph in real-time
     - _Requirements: 1.4_
 
-  - [ ] 11.8 Write property tests for filtering
+  - [x] 11.8 Write property tests for filtering
     - **Property 4: Severity Filter Correctness**
     - **Validates: Requirements 1.4**
 
-  - [ ] 11.9 Optimize graph performance for large datasets
+  - [x] 11.9 Optimize graph performance for large datasets
     - Implement viewport culling
     - Use WebGL rendering for 50k+ nodes
     - Optimize interaction response time
     - _Requirements: 1.5_
 
-  - [ ] 11.10 Write property tests for performance
+  - [x] 11.10 Write property tests for performance
     - **Property 5: Graph Performance Under Load**
     - **Validates: Requirements 1.5**
+
 
 - [ ] 12. Accessibility and UX Improvements
   - [ ] 12.1 Implement WCAG 2.1 AA color contrast compliance
