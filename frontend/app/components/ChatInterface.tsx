@@ -34,13 +34,7 @@ export default function ChatInterface({
         messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
     }, [messages]);
 
-    // Auto-resize textarea
-    useEffect(() => {
-        if (inputRef.current) {
-            inputRef.current.style.height = "auto";
-            inputRef.current.style.height = `${Math.min(inputRef.current.scrollHeight, 120)}px`;
-        }
-    }, [input]);
+
 
     const handleSubmit = () => {
         if (input.trim() && !isLoading) {
@@ -186,8 +180,8 @@ export default function ChatInterface({
                         onChange={(e) => setInput(e.target.value)}
                         onKeyDown={handleKeyDown}
                         placeholder="Ask about supply chain risks..."
-                        className="flex-1 bg-gray-800/50 border border-white/10 rounded-xl px-4 py-3 text-sm resize-none focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500/50 placeholder-gray-500"
-                        rows={1}
+                        className="flex-1 bg-gray-800/50 border border-white/10 rounded-xl px-4 py-3 text-sm resize-none focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500/50 placeholder-gray-500 overflow-y-auto max-h-24"
+                        rows={2}
                         disabled={isLoading}
                     />
                     <button
