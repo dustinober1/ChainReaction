@@ -45,6 +45,21 @@ from src.analysis.resilience import (
     ResilienceRecalculator,
     RedundancyInfo,
 )
+from src.analysis.predictive import (
+    PatternAnalyzer,
+    EarlyWarningDetector,
+    RiskForecaster,
+    ProactiveAlertGenerator,
+    ForecastAccuracyTracker,
+    TrendDirection,
+    WarningLevel,
+    SeasonalPattern,
+    RiskPattern,
+    EarlyWarning,
+    RiskForecast,
+    ForecastAccuracy,
+    PredictiveAlert,
+)
 
 __all__ = [
     # Signatures
@@ -88,4 +103,18 @@ __all__ = [
     "ResilienceHistoryTracker",
     "ResilienceRecalculator",
     "RedundancyInfo",
+    # Predictive Analytics
+    "PatternAnalyzer",
+    "EarlyWarningDetector",
+    "RiskForecaster",
+    "ProactiveAlertGenerator",
+    "ForecastAccuracyTracker",
+    "TrendDirection",
+    "WarningLevel",
+    "SeasonalPattern",
+    "RiskPattern",
+    "EarlyWarning",
+    "RiskForecast",
+    "ForecastAccuracy",
+    "PredictiveAlert",
 ]
