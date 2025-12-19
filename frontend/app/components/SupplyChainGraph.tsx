@@ -92,9 +92,16 @@ export default function SupplyChainGraph({
     const [dimensions, setDimensions] = useState({ width: 800, height: 600 });
 
     // Process nodes to add geographic coordinates
+    // ForceGraph2D uses centered coordinates (0,0 is center)
+    // Our map SVG uses 0-1000 x 0-500, so we need to convert
     const processedData = useMemo(() => {
+        // Scale factors to convert map coords to screen coords
         const scaleX = dimensions.width / 1000;
         const scaleY = dimensions.height / 500;
+
+        // Center offset (ForceGraph centers at 0,0)
+        const centerX = dimensions.width / 2;
+        const centerY = dimensions.height / 2;
 
         // Create a map of node positions
         const nodePositions: Record<string, { x: number; y: number }> = {};
@@ -103,8 +110,9 @@ export default function SupplyChainGraph({
         const processedNodes = data.nodes.map((node, index) => {
             if (node.type === "supplier" && node.location && LOCATION_COORDS[node.location]) {
                 const coords = LOCATION_COORDS[node.location];
-                const x = coords.x * scaleX;
-                const y = coords.y * scaleY;
+                // Convert map coords to centered ForceGraph coords
+                const x = (coords.x * scaleX) - centerX;
+                const y = (coords.y * scaleY) - centerY;
                 nodePositions[node.id] = { x, y };
                 return { ...node, fx: x, fy: y, x, y };
             }
@@ -131,8 +139,8 @@ export default function SupplyChainGraph({
                     avgY /= connectedSuppliers.length;
 
                     // Add some offset to avoid overlap
-                    const offset = 40 + (index % 3) * 20;
-                    const angle = (index * 0.8) + Math.PI / 4;
+                    const offset = 30 + (index % 3) * 15;
+                    const angle = (index * 1.2) + Math.PI / 6;
                     const x = avgX + Math.cos(angle) * offset;
                     const y = avgY + Math.sin(angle) * offset;
 
@@ -164,8 +172,8 @@ export default function SupplyChainGraph({
                     avgY /= connectedNodes.length;
 
                     // Products go below, risks go above
-                    const yOffset = node.type === "risk" ? -60 : 60;
-                    const xOffset = (index % 4 - 2) * 35;
+                    const yOffset = node.type === "risk" ? -50 : 50;
+                    const xOffset = (index % 4 - 2) * 25;
                     const x = avgX + xOffset;
                     const y = avgY + yOffset;
 
