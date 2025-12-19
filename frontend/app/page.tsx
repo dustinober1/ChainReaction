@@ -351,7 +351,7 @@ export default function Dashboard() {
   const unacknowledgedCount = alerts.filter((a) => !a.acknowledged).length;
 
   return (
-    <div className="min-h-screen bg-gray-950 text-white">
+    <div className="h-screen bg-gray-950 text-white overflow-hidden">
       {/* Modals */}
       <NotificationsPanel
         isOpen={showNotifications}
@@ -429,10 +429,10 @@ export default function Dashboard() {
 
 
       {/* Main Content */}
-      <main className="max-w-[1920px] mx-auto p-4">
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 h-[calc(100vh-88px)]">
+      <main className="max-w-[1920px] mx-auto p-4 h-[calc(100vh-88px)] overflow-hidden">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 h-full">
           {/* Alerts Panel */}
-          <div className="lg:col-span-2 h-full">
+          <div className="lg:col-span-2 h-full overflow-hidden">
             <AlertsPanel
               alerts={alerts}
               onAlertClick={handleAlertClick}
@@ -441,7 +441,7 @@ export default function Dashboard() {
           </div>
 
           {/* Graph Visualization */}
-          <div className="lg:col-span-7 h-full relative">
+          <div className="lg:col-span-7 h-full relative overflow-hidden">
             <SupplyChainGraph
               data={graphData}
               onNodeClick={handleNodeClick}
@@ -460,7 +460,7 @@ export default function Dashboard() {
           </div>
 
           {/* Chat Interface */}
-          <div className="lg:col-span-3 h-full">
+          <div className="lg:col-span-3 h-full overflow-hidden">
             <ChatInterface
               messages={messages}
               onSendMessage={handleSendMessage}
