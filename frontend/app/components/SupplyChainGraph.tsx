@@ -22,6 +22,8 @@ export interface GraphNode {
     location?: string;
     isAtRisk?: boolean;
     isRiskSource?: boolean;
+    lat?: number;
+    lng?: number;
 }
 
 export interface GraphLink {

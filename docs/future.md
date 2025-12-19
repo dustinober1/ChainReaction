@@ -17,9 +17,9 @@ This document outlines 10 high-impact improvements to make ChainReaction a "best
 **User Story:** *As a Logistics Coordinator, I want to see a real-world map with risk heatmaps so I can visualize how regional events (like hurricanes or strikes) geographically cluster around my suppliers.*
 
 **Task List:**
-- [ ] Replace or augment the current map with a Mapbox or Leaflet integration.
-- [ ] Implement a "Risk Heatmap" layer based on aggregated entity risk scores in a region.
-- [ ] Add geographic polygons to represent weather event footprints (e.g., hurricane paths).
+- [x] Replace or augment the current map with a Mapbox or Leaflet integration.
+- [x] Implement a "Risk Heatmap" layer based on aggregated entity risk scores in a region.
+- [x] Add geographic polygons to represent weather event footprints (e.g., hurricane paths).
 - [ ] Enable map-based filtering of the supply chain graph.
 
 ## 3. 📈 Historical Risk Analytics & Trends

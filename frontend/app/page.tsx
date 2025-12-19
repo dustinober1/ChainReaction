@@ -25,6 +25,21 @@ const SupplyChainGraph = dynamic(
   }
 );
 
+const RiskMap = dynamic(
+  () => import("./components/RiskMap"),
+  {
+    ssr: false,
+    loading: () => (
+      <div className="flex items-center justify-center h-full bg-gray-900/50 rounded-xl">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500 mx-auto mb-4"></div>
+          <p className="text-gray-400 text-sm">Loading map data...</p>
+        </div>
+      </div>
+    ),
+  }
+);
+
 // Demo data
 const generateDemoData = (): GraphData => {
   const nodes: GraphNode[] = [];
@@ -32,11 +47,11 @@ const generateDemoData = (): GraphData => {
 
   // Suppliers
   const suppliers = [
-    { id: "SUP-001", name: "Taiwan Semi Co.", location: "Taiwan", riskScore: 75, isAtRisk: true },
-    { id: "SUP-002", name: "Vietnam Electronics", location: "Vietnam", riskScore: 30 },
-    { id: "SUP-003", name: "German Precision", location: "Germany", riskScore: 15 },
-    { id: "SUP-004", name: "Shanghai Components", location: "China", riskScore: 45, isAtRisk: true },
-    { id: "SUP-005", name: "Korean Chips Ltd", location: "Korea", riskScore: 20 },
+    { id: "SUP-001", name: "Taiwan Semi Co.", location: "Taiwan", riskScore: 75, isAtRisk: true, lat: 25.0330, lng: 121.5654 },
+    { id: "SUP-002", name: "Vietnam Electronics", location: "Vietnam", riskScore: 30, lat: 21.0278, lng: 105.8342 },
+    { id: "SUP-003", name: "German Precision", location: "Germany", riskScore: 15, lat: 51.1657, lng: 10.4515 },
+    { id: "SUP-004", name: "Shanghai Components", location: "China", riskScore: 45, isAtRisk: true, lat: 31.2304, lng: 121.4737 },
+    { id: "SUP-005", name: "Korean Chips Ltd", location: "Korea", riskScore: 20, lat: 37.5665, lng: 126.9780 },
   ];
 
   suppliers.forEach((s) => {
@@ -48,6 +63,8 @@ const generateDemoData = (): GraphData => {
       location: s.location,
       riskScore: s.riskScore,
       isAtRisk: s.isAtRisk,
+      lat: s.lat,
+      lng: s.lng,
     });
   });
 
@@ -148,6 +165,7 @@ export default function Dashboard() {
   const [alerts, setAlerts] = useState(demoAlerts);
   const [showNotifications, setShowNotifications] = useState(false);
   const [showSettings, setShowSettings] = useState(false);
+  const [viewMode, setViewMode] = useState<"graph" | "map">("graph");
   const [stats, setStats] = useState({
     suppliers: 5,
     components: 6,
@@ -440,15 +458,38 @@ export default function Dashboard() {
             />
           </div>
 
-          {/* Graph Visualization */}
-          <div className="lg:col-span-7 h-full relative overflow-hidden">
-            <SupplyChainGraph
-              data={graphData}
-              onNodeClick={handleNodeClick}
-              onNodeHover={handleNodeHover}
-              selectedNode={selectedNode?.id}
-              highlightedNodes={highlightedNodes}
-            />
+          {/* Graph/Map Visualization */}
+          <div className="lg:col-span-7 h-full relative overflow-hidden bg-gray-900 rounded-xl border border-white/5">
+            {/* View Toggle */}
+            <div className="absolute top-4 left-4 z-10 bg-gray-900/80 backdrop-blur-md p-1 rounded-lg border border-white/10 flex gap-1">
+              <button
+                onClick={() => setViewMode("graph")}
+                className={`px-3 py-1.5 text-xs font-medium rounded-md transition ${viewMode === "graph" ? "bg-blue-600 text-white shadow-lg shadow-blue-500/20" : "text-gray-400 hover:text-white hover:bg-white/5"}`}
+              >
+                Graph View
+              </button>
+              <button
+                onClick={() => setViewMode("map")}
+                className={`px-3 py-1.5 text-xs font-medium rounded-md transition ${viewMode === "map" ? "bg-blue-600 text-white shadow-lg shadow-blue-500/20" : "text-gray-400 hover:text-white hover:bg-white/5"}`}
+              >
+                Geo Map
+              </button>
+            </div>
+
+            {viewMode === "graph" ? (
+              <SupplyChainGraph
+                data={graphData}
+                onNodeClick={handleNodeClick}
+                onNodeHover={handleNodeHover}
+                selectedNode={selectedNode?.id}
+                highlightedNodes={highlightedNodes}
+              />
+            ) : (
+              <RiskMap
+                nodes={graphData.nodes}
+                onNodeClick={handleNodeClick}
+              />
+            )}
 
             {/* Node Details Panel */}
             <NodeDetailsPanel
