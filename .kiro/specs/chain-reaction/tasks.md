@@ -32,36 +32,36 @@ Each task builds incrementally on previous work, with property-based tests valid
     - **Property 35: Referential Integrity During Updates**
     - **Validates: Requirements 7.4, 7.5**
 
-- [ ] 2. Resilience Scoring Engine
-  - [ ] 2.1 Implement ResilienceScorer class with multi-level calculation
+- [x] 2. Resilience Scoring Engine
+  - [x] 2.1 Implement ResilienceScorer class with multi-level calculation
     - Calculate component-level scores based on redundancy
     - Aggregate to product-level scores
     - Calculate portfolio-level aggregate
     - _Requirements: 3.1, 3.2, 3.3_
 
-  - [ ] 2.2 Write property tests for resilience scoring
+  - [x] 2.2 Write property tests for resilience scoring
     - **Property 11: Resilience Score Calculation**
     - **Property 12: Redundancy Impact on Resilience**
     - **Property 13: Multi-Level Resilience Metrics**
     - **Validates: Requirements 3.1, 3.2, 3.3**
 
-  - [ ] 2.3 Implement historical score tracking and trend analysis
+  - [x] 2.3 Implement historical score tracking and trend analysis
     - Store historical scores in database
     - Calculate trend metrics (direction, rate of change)
     - Implement time-series queries
     - _Requirements: 3.4_
 
-  - [ ] 2.4 Write property tests for historical tracking
+  - [x] 2.4 Write property tests for historical tracking
     - **Property 14: Historical Resilience Tracking**
     - **Validates: Requirements 3.4**
 
-  - [ ] 2.5 Implement real-time resilience recalculation
+  - [x] 2.5 Implement real-time resilience recalculation
     - Create background job for affected entity recalculation
     - Implement 5-minute SLA with monitoring
     - Add recalculation triggers on risk event detection
     - _Requirements: 3.5_
 
-  - [ ] 2.6 Write property tests for recalculation timeliness
+  - [x] 2.6 Write property tests for recalculation timeliness
     - **Property 15: Resilience Recalculation Timeliness**
     - **Validates: Requirements 3.5**
 

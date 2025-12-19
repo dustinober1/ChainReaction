@@ -39,6 +39,12 @@ from src.analysis.integrity import (
     IntegrityCheckResult,
     format_validation_errors,
 )
+from src.analysis.resilience import (
+    ResilienceScorer,
+    ResilienceHistoryTracker,
+    ResilienceRecalculator,
+    RedundancyInfo,
+)
 
 __all__ = [
     # Signatures
@@ -77,4 +83,9 @@ __all__ = [
     "DataIntegrityManager",
     "IntegrityCheckResult",
     "format_validation_errors",
+    # Resilience
+    "ResilienceScorer",
+    "ResilienceHistoryTracker",
+    "ResilienceRecalculator",
+    "RedundancyInfo",
 ]
