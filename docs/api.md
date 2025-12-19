@@ -8,12 +8,18 @@ Complete reference for the ChainReaction REST API.
 - [Authentication](#authentication)
 - [Rate Limiting](#rate-limiting)
 - [Response Format](#response-format)
-- [Endpoints](#endpoints)
+- [API v1 Endpoints](#api-v1-endpoints)
   - [Health](#health)
   - [Risks](#risks)
   - [Supply Chain](#supply-chain)
   - [Alerts](#alerts)
   - [Webhooks](#webhooks)
+- [API v2 Endpoints](#api-v2-endpoints)
+  - [Resilience Metrics](#resilience-metrics)
+  - [Advanced Search](#advanced-search)
+  - [Mitigations](#mitigations)
+  - [Alert Rules](#alert-rules)
+  - [Predictive Analytics](#predictive-analytics)
 - [Error Handling](#error-handling)
 - [Examples](#examples)
 
@@ -23,9 +29,9 @@ The ChainReaction API provides programmatic access to supply chain risk data, al
 
 **Base URL:** `http://localhost:8000`
 
-**API Version:** `0.1.0`
-
-**Full Base Path:** `http://localhost:8000/api/v1`
+**API Versions:**
+- **v1**: Core functionality - `http://localhost:8000/api/v1`
+- **v2**: Enhanced features - `http://localhost:8000/api/v2`
 
 ## Authentication
 
@@ -103,7 +109,7 @@ All responses follow a standardized format:
   "data": { ... },
   "meta": {
     "timestamp": "2024-01-15T10:30:00Z",
-    "version": "0.1.0"
+    "version": "1.0.0"
   }
 }
 ```
@@ -146,7 +152,7 @@ All responses follow a standardized format:
 
 ---
 
-## Endpoints
+## API v1 Endpoints
 
 ### Health
 
@@ -643,6 +649,365 @@ Get webhook delivery statistics.
 
 ---
 
+## API v2 Endpoints
+
+API v2 provides enhanced functionality including resilience metrics, advanced search, and predictive analytics.
+
+### Resilience Metrics
+
+#### GET /api/v2/resilience/{entity_id}
+
+Get resilience score for a specific entity.
+
+**Response:**
+
+```json
+{
+  "success": true,
+  "data": {
+    "entity_id": "SUP-001",
+    "entity_type": "supplier",
+    "overall_score": 0.78,
+    "components": {
+      "supplier_diversity": 0.82,
+      "geographic_distribution": 0.65,
+      "backup_availability": 0.85,
+      "lead_time_buffer": 0.72,
+      "financial_stability": 0.90
+    },
+    "calculated_at": "2024-01-15T10:30:00Z",
+    "trend": "improving"
+  }
+}
+```
+
+#### GET /api/v2/resilience/trend
+
+Get resilience trend analysis.
+
+**Query Parameters:**
+
+| Parameter   | Type   | Description                    |
+| ----------- | ------ | ------------------------------ |
+| `entity_id` | string | Entity ID (optional)           |
+| `period`    | string | Time period (7d, 30d, 90d, 1y) |
+
+**Response:**
+
+```json
+{
+  "success": true,
+  "data": {
+    "period": "30d",
+    "data_points": [
+      {
+        "date": "2024-01-01",
+        "score": 0.72
+      },
+      {
+        "date": "2024-01-15",
+        "score": 0.78
+      }
+    ],
+    "average": 0.75,
+    "trend_direction": "up",
+    "change_percent": 8.3
+  }
+}
+```
+
+---
+
+### Advanced Search
+
+#### POST /api/v2/search/advanced
+
+Perform an advanced full-text search.
+
+**Request Body:**
+
+```json
+{
+  "query": "semiconductor shortage",
+  "filters": {
+    "severity": ["High", "Critical"],
+    "location": ["Taiwan", "China"],
+    "date_range": {
+      "start": "2024-01-01",
+      "end": "2024-01-31"
+    }
+  },
+  "sort": {
+    "field": "severity_score",
+    "direction": "desc"
+  },
+  "limit": 50,
+  "offset": 0
+}
+```
+
+**Response:**
+
+```json
+{
+  "success": true,
+  "data": {
+    "results": [
+      {
+        "id": "RISK-0001",
+        "event_type": "Supply Shortage",
+        "severity": "Critical",
+        "location": "Taiwan",
+        "relevance_score": 0.95,
+        "highlighted_content": "Major <em>semiconductor shortage</em> affecting..."
+      }
+    ],
+    "total_count": 15,
+    "facets": {
+      "severity": {
+        "Critical": 5,
+        "High": 10
+      },
+      "location": {
+        "Taiwan": 8,
+        "China": 7
+      }
+    }
+  }
+}
+```
+
+#### GET /api/v2/search/saved
+
+List saved searches.
+
+**Response:**
+
+```json
+{
+  "success": true,
+  "data": [
+    {
+      "id": "SEARCH-001",
+      "name": "Taiwan Semiconductor Risks",
+      "query": "semiconductor taiwan",
+      "filters": { ... },
+      "created_at": "2024-01-10T00:00:00Z"
+    }
+  ]
+}
+```
+
+#### POST /api/v2/search/saved
+
+Save a search.
+
+**Request Body:**
+
+```json
+{
+  "name": "Critical Taiwan Risks",
+  "query": "taiwan critical",
+  "filters": {
+    "severity": ["Critical"]
+  }
+}
+```
+
+---
+
+### Mitigations
+
+#### GET /api/v2/mitigations
+
+List all mitigation plans.
+
+**Response:**
+
+```json
+{
+  "success": true,
+  "data": [
+    {
+      "id": "MIT-0001",
+      "risk_event_id": "RISK-0001",
+      "title": "Activate Backup Supplier",
+      "status": "in_progress",
+      "priority": "high",
+      "assignee": "procurement@company.com",
+      "created_at": "2024-01-15T09:00:00Z"
+    }
+  ]
+}
+```
+
+#### POST /api/v2/mitigations
+
+Create a mitigation plan.
+
+**Request Body:**
+
+```json
+{
+  "risk_event_id": "RISK-0001",
+  "title": "Activate backup supplier",
+  "description": "Contact and activate SUP-005 as backup",
+  "priority": "high",
+  "assignee": "procurement@company.com",
+  "due_date": "2024-01-20"
+}
+```
+
+#### GET /api/v2/mitigations/{id}
+
+Get mitigation details.
+
+#### PUT /api/v2/mitigations/{id}
+
+Update mitigation status.
+
+**Request Body:**
+
+```json
+{
+  "status": "completed",
+  "resolution_notes": "SUP-005 activated successfully"
+}
+```
+
+---
+
+### Alert Rules
+
+#### GET /api/v2/alerts/rules
+
+List alert rules.
+
+**Response:**
+
+```json
+{
+  "success": true,
+  "data": [
+    {
+      "id": "RULE-001",
+      "name": "Critical Risk Alert",
+      "conditions": {
+        "severity": "Critical",
+        "confidence_min": 0.8
+      },
+      "channels": ["email", "slack"],
+      "recipients": ["team@company.com"],
+      "enabled": true
+    }
+  ]
+}
+```
+
+#### POST /api/v2/alerts/rules
+
+Create an alert rule.
+
+**Request Body:**
+
+```json
+{
+  "name": "High Severity Taiwan Alert",
+  "conditions": {
+    "severity": ["High", "Critical"],
+    "location": "Taiwan"
+  },
+  "channels": ["email", "slack", "webhook"],
+  "recipients": ["alerts@company.com"],
+  "webhook_url": "https://slack.company.com/webhook"
+}
+```
+
+#### DELETE /api/v2/alerts/rules/{id}
+
+Delete an alert rule.
+
+---
+
+### Predictive Analytics
+
+#### GET /api/v2/analytics/predictions
+
+Get risk predictions.
+
+**Query Parameters:**
+
+| Parameter | Type   | Description                  |
+| --------- | ------ | ---------------------------- |
+| `horizon` | string | Prediction horizon (7d, 30d) |
+| `entity`  | string | Entity ID to predict for     |
+
+**Response:**
+
+```json
+{
+  "success": true,
+  "data": {
+    "predictions": [
+      {
+        "entity_id": "SUP-001",
+        "entity_name": "Taiwan Semiconductor Co.",
+        "predicted_risk_score": 0.72,
+        "confidence": 0.85,
+        "risk_factors": [
+          {
+            "factor": "Weather patterns",
+            "contribution": 0.3
+          },
+          {
+            "factor": "Geopolitical tension",
+            "contribution": 0.25
+          }
+        ],
+        "horizon": "30d"
+      }
+    ],
+    "generated_at": "2024-01-15T10:30:00Z"
+  }
+}
+```
+
+#### GET /api/v2/analytics/trends
+
+Get trend analysis.
+
+**Response:**
+
+```json
+{
+  "success": true,
+  "data": {
+    "overall_risk_trend": "increasing",
+    "risk_by_category": {
+      "Natural Disaster": {
+        "current": 12,
+        "previous": 8,
+        "change": 50
+      },
+      "Geopolitical": {
+        "current": 5,
+        "previous": 7,
+        "change": -28.5
+      }
+    },
+    "top_emerging_risks": [
+      {
+        "description": "Semiconductor supply constraints",
+        "probability": 0.75,
+        "potential_impact": "High"
+      }
+    ]
+  }
+}
+```
+
+---
+
 ## Error Handling
 
 ### HTTP Status Codes
@@ -706,6 +1071,19 @@ new_risk = {
 response = requests.post(f"{BASE_URL}/risks", json=new_risk, headers=headers)
 created = response.json()["data"]
 print(f"Created risk: {created['id']}")
+
+# Advanced search (v2)
+search_query = {
+    "query": "semiconductor shortage",
+    "filters": {"severity": ["Critical", "High"]},
+    "limit": 10
+}
+response = requests.post(
+    "http://localhost:8000/api/v2/search/advanced",
+    json=search_query,
+    headers=headers
+)
+results = response.json()["data"]["results"]
 ```
 
 ### JavaScript (fetch)
@@ -735,6 +1113,18 @@ async function acknowledgeAlert(alertId) {
   });
   return response.json();
 }
+
+async function advancedSearch(query, filters) {
+  const response = await fetch('http://localhost:8000/api/v2/search/advanced', {
+    method: 'POST',
+    headers: {
+      'X-API-Key': API_KEY,
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({ query, filters })
+  });
+  return response.json();
+}
 ```
 
 ### cURL
@@ -757,6 +1147,20 @@ curl -X POST "http://localhost:8000/api/v1/risks" \
     "source_url": "https://example.com",
     "description": "Typhoon warning"
   }'
+
+# Advanced search (v2)
+curl -X POST "http://localhost:8000/api/v2/search/advanced" \
+  -H "X-API-Key: your-api-key" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "query": "semiconductor shortage",
+    "filters": {"severity": ["Critical", "High"]},
+    "limit": 10
+  }'
+
+# Get resilience score (v2)
+curl -X GET "http://localhost:8000/api/v2/resilience/SUP-001" \
+  -H "X-API-Key: your-api-key"
 
 # Register webhook
 curl -X POST "http://localhost:8000/api/v1/webhooks" \

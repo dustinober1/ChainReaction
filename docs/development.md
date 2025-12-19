@@ -9,6 +9,7 @@ Complete guide for developing, testing, and contributing to ChainReaction.
 - [Code Style](#code-style)
 - [Testing](#testing)
 - [Adding New Features](#adding-new-features)
+- [Plugin Development](#plugin-development)
 - [Common Tasks](#common-tasks)
 - [Debugging](#debugging)
 - [Contributing](#contributing)
@@ -121,14 +122,21 @@ ChainReaction/
 │   │   ├── validation.py      # Extraction validation
 │   │   ├── training.py        # Training data management
 │   │   ├── prioritization.py  # Risk prioritization
-│   │   └── reporting.py       # Report generation
+│   │   ├── reporting.py       # Report generation
+│   │   ├── alerts.py          # Multi-channel alert system
+│   │   ├── search.py          # Full-text search & filtering
+│   │   ├── performance.py     # Caching & batch processing
+│   │   ├── accessibility.py   # WCAG 2.1 AA compliance
+│   │   └── plugins.py         # Plugin architecture
 │   │
 │   ├── api/                   # FastAPI REST API
 │   │   ├── __init__.py
 │   │   ├── main.py            # API application
-│   │   ├── routes.py          # API routes
+│   │   ├── routes.py          # API routes (v1)
+│   │   ├── routes_v2.py       # API routes (v2)
 │   │   ├── auth.py            # Authentication
-│   │   └── webhooks.py        # Webhook management
+│   │   ├── webhooks.py        # Webhook management
+│   │   └── webhooks_routes.py # Webhook endpoints
 │   │
 │   ├── data/                  # Data management
 │   │   ├── __init__.py
@@ -160,6 +168,7 @@ ChainReaction/
 ├── frontend/                  # Next.js dashboard
 │   ├── app/
 │   │   ├── components/        # React components
+│   │   ├── utils/             # Dashboard utilities
 │   │   ├── globals.css        # Global styles
 │   │   ├── layout.tsx         # Root layout
 │   │   └── page.tsx           # Main page
@@ -167,7 +176,7 @@ ChainReaction/
 │
 ├── tests/                     # Test suite
 │   ├── unit/                  # Unit tests
-│   ├── property/              # Property-based tests
+│   ├── property/              # Property-based tests (334 tests)
 │   ├── integration/           # Integration tests
 │   └── conftest.py            # Pytest fixtures
 │
@@ -182,6 +191,17 @@ ChainReaction/
 ├── pyproject.toml             # Python project config
 └── README.md
 ```
+
+### Analysis Module Overview
+
+| Module             | Purpose                | Key Classes                     |
+| ------------------ | ---------------------- | ------------------------------- |
+| `modules.py`       | DSPy analysis modules  | `RiskAnalyst`, `EntityAnalyst`  |
+| `alerts.py`        | Multi-channel alerting | `AlertManager`, `AlertRule`     |
+| `search.py`        | Full-text search       | `SearchEngine`, `SearchFilter`  |
+| `performance.py`   | Caching & batching     | `QueryCache`, `BatchProcessor`  |
+| `accessibility.py` | WCAG 2.1 AA compliance | `ColorContrastChecker`          |
+| `plugins.py`       | Plugin architecture    | `PluginManager`, `SourcePlugin` |
 
 ## Code Style
 
@@ -250,11 +270,12 @@ npx tsc --noEmit
 
 ### Test Categories
 
-| Type        | Directory            | Purpose                                 |
-| ----------- | -------------------- | --------------------------------------- |
-| Unit        | `tests/unit/`        | Test individual components in isolation |
-| Property    | `tests/property/`    | Hypothesis-based property tests         |
-| Integration | `tests/integration/` | Test component interactions             |
+| Type        | Directory                 | Tests | Purpose                                 |
+| ----------- | ------------------------- | ----- | --------------------------------------- |
+| Unit        | `tests/unit/`             | 156   | Test individual components in isolation |
+| Property    | `tests/property/`         | 334   | Hypothesis-based property tests         |
+| Integration | `tests/integration/`      | 12    | Test component interactions             |
+| Frontend    | `frontend/app/__tests__/` | 37    | Jest tests for dashboard utilities      |
 
 ### Running Tests
 
@@ -268,7 +289,7 @@ pytest tests/property/ -v
 pytest tests/integration/ -v
 
 # Run specific file
-pytest tests/unit/test_models.py -v
+pytest tests/property/test_alerts.py -v
 
 # Run specific test
 pytest tests/unit/test_models.py::TestRiskEvent::test_creation -v
@@ -283,6 +304,24 @@ pytest tests/ -v --tb=long
 # Run failed tests only
 pytest tests/ --lf
 ```
+
+### Property Test Coverage
+
+ChainReaction uses property-based testing extensively with Hypothesis:
+
+| Module        | Properties Tested                           | Tests |
+| ------------- | ------------------------------------------- | ----- |
+| Models        | ID generation, validation, serialization    | 40    |
+| DSPy          | Extraction, entity linking, assessment      | 32    |
+| Graph         | Path traversal, redundancy, alternatives    | 24    |
+| Workflow      | State management, event flow                | 20    |
+| API           | Response format, authentication             | 24    |
+| Alerts        | Rules, channels, escalation, acknowledgment | 27    |
+| Search        | Full-text, filters, export                  | 25    |
+| Performance   | Caching, batching, monitoring               | 28    |
+| Accessibility | Color contrast, keyboard nav, dictionary    | 26    |
+| Plugins       | Registration, lifecycle, compatibility      | 28    |
+| Dashboard     | Visualization utilities                     | 37    |
 
 ### Writing Tests
 
@@ -367,7 +406,7 @@ class EventType(str, Enum):
 
 ### 2. Adding a New API Endpoint
 
-1. Add the route in `src/api/routes.py`:
+1. Add the route in `src/api/routes.py` (v1) or `src/api/routes_v2.py` (v2):
 ```python
 @router.get("/new-endpoint")
 async def new_endpoint(api_key: str = Depends(require_api_key)):
@@ -395,6 +434,164 @@ class NewSource(BaseSource):
 
 3. Add tests and documentation
 
+### 4. Adding a New Analysis Module
+
+See [Plugin Development](#plugin-development) for extending analysis capabilities.
+
+## Plugin Development
+
+ChainReaction supports custom plugins for extensibility.
+
+### Plugin Types
+
+| Type            | Base Class             | Purpose                    |
+| --------------- | ---------------------- | -------------------------- |
+| **Source**      | `SourcePlugin`         | Custom data sources        |
+| **Analysis**    | `AnalysisPlugin`       | Custom DSPy modules        |
+| **Integration** | `IntegrationPlugin`    | Bidirectional integrations |
+| **Risk Type**   | Via `RiskTypeRegistry` | Custom risk definitions    |
+
+### Creating a Source Plugin
+
+```python
+from src.analysis.plugins import (
+    SourcePlugin,
+    PluginMetadata,
+    PluginVersion,
+    PluginType,
+)
+from typing import Any
+
+class MyCustomSource(SourcePlugin):
+    """Custom news source plugin."""
+    
+    def __init__(self, api_key: str):
+        super().__init__()
+        self._api_key = api_key
+    
+    @property
+    def metadata(self) -> PluginMetadata:
+        return PluginMetadata(
+            id="my-custom-source",
+            name="My Custom Source",
+            version=PluginVersion(1, 0, 0),
+            plugin_type=PluginType.SOURCE,
+            description="Custom news source for supply chain events",
+            author="Your Name",
+        )
+    
+    def fetch_data(self) -> list[dict[str, Any]]:
+        """Fetch data from the custom source."""
+        # Your implementation here
+        return [
+            {"id": "evt-1", "content": "Event content..."}
+        ]
+    
+    def get_source_info(self) -> dict[str, Any]:
+        """Return source metadata."""
+        return {
+            "type": "custom_api",
+            "url": "https://api.example.com",
+        }
+
+# Register with plugin manager
+from src.analysis.plugins import PluginManager
+
+manager = PluginManager()
+plugin = MyCustomSource(api_key="...")
+manager.register_plugin(plugin)
+manager.activate_plugin("my-custom-source")
+
+# Collect data from all sources
+data = manager.collect_source_data()
+```
+
+### Creating an Analysis Plugin
+
+```python
+from src.analysis.plugins import (
+    AnalysisPlugin,
+    PluginMetadata,
+    PluginVersion,
+    PluginType,
+)
+
+class CustomSentimentAnalyzer(AnalysisPlugin):
+    """Custom sentiment analysis plugin."""
+    
+    @property
+    def metadata(self) -> PluginMetadata:
+        return PluginMetadata(
+            id="sentiment-analyzer",
+            name="Sentiment Analyzer",
+            version=PluginVersion(1, 0, 0),
+            plugin_type=PluginType.ANALYSIS,
+        )
+    
+    def analyze(self, data: dict) -> dict:
+        """Perform sentiment analysis."""
+        content = data.get("content", "")
+        # Your analysis logic
+        return {
+            "sentiment": "negative",
+            "score": 0.85,
+            "keywords": ["disruption", "delay"],
+        }
+    
+    def get_input_schema(self) -> dict:
+        return {
+            "type": "object",
+            "properties": {
+                "content": {"type": "string"}
+            }
+        }
+```
+
+### Registering Custom Risk Types
+
+```python
+from src.analysis.plugins import RiskTypeRegistry, CustomRiskType
+
+registry = RiskTypeRegistry()
+
+# Register a custom risk type
+registry.register(CustomRiskType(
+    type_id="cyber_attack",
+    name="Cyber Attack",
+    description="Cyber security incidents affecting supply chain",
+    severity_default="Critical",
+    keywords=["ransomware", "breach", "hack", "malware"],
+    extraction_patterns=[r"cyber\s*attack", r"data\s*breach"],
+    color="#dc2626",
+    icon="shield-alert",
+))
+
+# Add custom extraction rules
+registry.add_extraction_rule(
+    "cyber_attack",
+    lambda text: "zero-day" in text.lower(),
+)
+
+# Match text
+matches = registry.match_text("Ransomware attack disrupts factory operations")
+# ['cyber_attack']
+```
+
+### Plugin Lifecycle
+
+```
+UNLOADED → LOADED → INITIALIZED → ACTIVE → DISABLED → UNLOADED
+```
+
+```python
+plugin = MyPlugin()
+plugin.load()        # LOADED
+plugin.initialize()  # INITIALIZED
+plugin.activate()    # ACTIVE
+plugin.deactivate()  # DISABLED
+plugin.unload()      # UNLOADED
+```
+
 ## Common Tasks
 
 ### Generating Sample Data
@@ -417,6 +614,63 @@ manager.create_product(name="Smartphone", product_line="Mobile")
 # Create relationships
 manager.add_supplies_relation("SUP-001", "COMP-001")
 manager.add_part_of_relation("COMP-001", "PROD-001")
+```
+
+### Using the Search Engine
+
+```python
+from src.analysis.search import SearchEngine, SearchFilter, FilterOperator
+
+engine = SearchEngine()
+
+# Index some events
+engine.index_event({
+    "id": "RISK-001",
+    "event_type": "weather",
+    "location": "Taiwan",
+    "severity": "High",
+})
+
+# Search with filters
+results = engine.search(
+    query="semiconductor shortage",
+    filters=[
+        SearchFilter(
+            field="severity",
+            operator=FilterOperator.IN,
+            value=["High", "Critical"]
+        ),
+        SearchFilter(
+            field="location",
+            operator=FilterOperator.EQUALS,
+            value="Taiwan"
+        ),
+    ],
+    limit=10
+)
+```
+
+### Using the Alert System
+
+```python
+from src.analysis.alerts import AlertManager, AlertRule, DeliveryChannel
+
+manager = AlertManager()
+
+# Create a rule
+rule = AlertRule(
+    id="rule-001",
+    name="Critical Alert Rule",
+    conditions={"severity": ["Critical"]},
+    channels=[DeliveryChannel.EMAIL, DeliveryChannel.SLACK],
+    recipients=["alerts@company.com"],
+)
+manager.register_rule(rule)
+
+# Evaluate and send alerts
+triggered = manager.evaluate_rules(risk_event)
+for alert in triggered:
+    manager.send_alert(alert)
 ```
 
 ### Running the Workflow
