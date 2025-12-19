@@ -13,6 +13,7 @@ export interface ChatMessage {
 interface ChatInterfaceProps {
     messages: ChatMessage[];
     onSendMessage: (message: string) => void;
+    onClearChat?: () => void;
     isLoading?: boolean;
     onResultClick?: (result: any) => void;
 }
@@ -20,6 +21,7 @@ interface ChatInterfaceProps {
 export default function ChatInterface({
     messages,
     onSendMessage,
+    onClearChat,
     isLoading = false,
     onResultClick,
 }: ChatInterfaceProps) {
@@ -64,9 +66,22 @@ export default function ChatInterface({
     return (
         <div className="flex flex-col h-full glass-card">
             {/* Header */}
-            <div className="px-4 py-3 border-b border-white/10">
-                <h2 className="text-lg font-semibold gradient-text">Risk Analyst</h2>
-                <p className="text-xs text-gray-400">Ask questions about your supply chain</p>
+            <div className="px-4 py-3 border-b border-white/10 flex items-center justify-between">
+                <div>
+                    <h2 className="text-lg font-semibold gradient-text">Risk Analyst</h2>
+                    <p className="text-xs text-gray-400">Ask questions about your supply chain</p>
+                </div>
+                {messages.length > 0 && onClearChat && (
+                    <button
+                        onClick={onClearChat}
+                        className="p-2 text-gray-400 hover:text-white hover:bg-white/10 rounded-lg transition"
+                        title="Clear chat"
+                    >
+                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                        </svg>
+                    </button>
+                )}
             </div>
 
             {/* Messages */}
@@ -109,8 +124,8 @@ export default function ChatInterface({
                     >
                         <div
                             className={`max-w-[85%] rounded-2xl px-4 py-2 ${message.role === "user"
-                                    ? "bg-blue-600 text-white"
-                                    : "bg-gray-800 text-gray-100 border border-white/5"
+                                ? "bg-blue-600 text-white"
+                                : "bg-gray-800 text-gray-100 border border-white/5"
                                 }`}
                         >
                             <p className="text-sm whitespace-pre-wrap">{message.content}</p>
@@ -128,10 +143,10 @@ export default function ChatInterface({
                                                 <span className="text-sm font-medium">{product.name}</span>
                                                 <span
                                                     className={`text-xs px-2 py-0.5 rounded-full ${product.riskScore > 70
-                                                            ? "bg-red-500/20 text-red-400"
-                                                            : product.riskScore > 40
-                                                                ? "bg-amber-500/20 text-amber-400"
-                                                                : "bg-green-500/20 text-green-400"
+                                                        ? "bg-red-500/20 text-red-400"
+                                                        : product.riskScore > 40
+                                                            ? "bg-amber-500/20 text-amber-400"
+                                                            : "bg-green-500/20 text-green-400"
                                                         }`}
                                                 >
                                                     {product.riskScore}%

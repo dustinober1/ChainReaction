@@ -286,6 +286,11 @@ export default function Dashboard() {
     }
   }, [graphData]);
 
+  const handleClearChat = useCallback(() => {
+    setMessages([]);
+    setHighlightedNodes(new Set());
+  }, []);
+
   // Handler for View Impact Analysis button
   const handleViewImpact = useCallback((node: GraphNode) => {
     // Find connected nodes based on links
@@ -459,6 +464,7 @@ export default function Dashboard() {
             <ChatInterface
               messages={messages}
               onSendMessage={handleSendMessage}
+              onClearChat={handleClearChat}
               isLoading={isLoading}
               onResultClick={handleResultClick}
             />
