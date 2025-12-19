@@ -185,24 +185,144 @@ export default function SupplyChainGraph({
     );
 
     return (
-        <div ref={containerRef} className="w-full h-full graph-container">
-            <ForceGraph2D
-                ref={graphRef}
-                graphData={data}
-                width={dimensions.width}
-                height={dimensions.height}
-                nodeRelSize={6}
-                nodeCanvasObject={nodeCanvasObject}
-                linkCanvasObject={linkCanvasObject}
-                onNodeClick={handleNodeClick}
-                onNodeHover={handleNodeHover}
-                cooldownTicks={100}
-                linkDirectionalArrowLength={4}
-                linkDirectionalArrowRelPos={1}
-                backgroundColor="transparent"
-                d3AlphaDecay={0.02}
-                d3VelocityDecay={0.3}
-            />
+        <div ref={containerRef} className="w-full h-full graph-container relative">
+            {/* World Map Background */}
+            <div className="absolute inset-0 overflow-hidden opacity-20">
+                <svg
+                    viewBox="0 0 1000 500"
+                    className="w-full h-full"
+                    preserveAspectRatio="xMidYMid slice"
+                >
+                    {/* Simplified world map paths */}
+                    <defs>
+                        <linearGradient id="mapGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                            <stop offset="0%" stopColor="#3b82f6" stopOpacity="0.3" />
+                            <stop offset="100%" stopColor="#8b5cf6" stopOpacity="0.3" />
+                        </linearGradient>
+                    </defs>
+
+                    {/* Grid lines */}
+                    {[...Array(10)].map((_, i) => (
+                        <line
+                            key={`h-${i}`}
+                            x1="0"
+                            y1={i * 50}
+                            x2="1000"
+                            y2={i * 50}
+                            stroke="#3b82f6"
+                            strokeOpacity="0.1"
+                            strokeWidth="0.5"
+                        />
+                    ))}
+                    {[...Array(20)].map((_, i) => (
+                        <line
+                            key={`v-${i}`}
+                            x1={i * 50}
+                            y1="0"
+                            x2={i * 50}
+                            y2="500"
+                            stroke="#3b82f6"
+                            strokeOpacity="0.1"
+                            strokeWidth="0.5"
+                        />
+                    ))}
+
+                    {/* Simplified continent shapes */}
+                    {/* North America */}
+                    <path
+                        d="M150,80 Q200,60 250,80 Q300,100 280,150 Q260,200 200,220 Q150,200 120,150 Q100,120 150,80"
+                        fill="url(#mapGradient)"
+                        stroke="#3b82f6"
+                        strokeWidth="0.5"
+                        strokeOpacity="0.3"
+                    />
+
+                    {/* South America */}
+                    <path
+                        d="M220,250 Q260,230 280,260 Q300,320 280,380 Q260,420 230,400 Q200,360 210,300 Q210,260 220,250"
+                        fill="url(#mapGradient)"
+                        stroke="#3b82f6"
+                        strokeWidth="0.5"
+                        strokeOpacity="0.3"
+                    />
+
+                    {/* Europe */}
+                    <path
+                        d="M450,80 Q500,60 550,80 Q580,100 560,140 Q540,160 500,150 Q460,140 450,120 Q440,100 450,80"
+                        fill="url(#mapGradient)"
+                        stroke="#3b82f6"
+                        strokeWidth="0.5"
+                        strokeOpacity="0.3"
+                    />
+
+                    {/* Africa */}
+                    <path
+                        d="M480,180 Q530,160 560,200 Q580,260 560,320 Q530,380 490,360 Q450,320 460,260 Q470,200 480,180"
+                        fill="url(#mapGradient)"
+                        stroke="#3b82f6"
+                        strokeWidth="0.5"
+                        strokeOpacity="0.3"
+                    />
+
+                    {/* Asia */}
+                    <path
+                        d="M580,80 Q700,60 820,100 Q880,140 860,200 Q800,240 720,220 Q640,200 600,160 Q560,120 580,80"
+                        fill="url(#mapGradient)"
+                        stroke="#3b82f6"
+                        strokeWidth="0.5"
+                        strokeOpacity="0.3"
+                    />
+
+                    {/* Australia */}
+                    <path
+                        d="M780,320 Q840,300 880,340 Q900,380 860,400 Q820,410 780,380 Q760,350 780,320"
+                        fill="url(#mapGradient)"
+                        stroke="#3b82f6"
+                        strokeWidth="0.5"
+                        strokeOpacity="0.3"
+                    />
+
+                    {/* Location markers for suppliers */}
+                    {/* Taiwan */}
+                    <circle cx="800" cy="180" r="4" fill="#ef4444" opacity="0.6">
+                        <animate attributeName="opacity" values="0.6;1;0.6" dur="2s" repeatCount="indefinite" />
+                    </circle>
+
+                    {/* Germany */}
+                    <circle cx="510" cy="100" r="3" fill="#10b981" opacity="0.6" />
+
+                    {/* Vietnam */}
+                    <circle cx="760" cy="210" r="3" fill="#3b82f6" opacity="0.6" />
+
+                    {/* China/Shanghai */}
+                    <circle cx="780" cy="160" r="3" fill="#f59e0b" opacity="0.6" />
+
+                    {/* Korea */}
+                    <circle cx="820" cy="140" r="3" fill="#3b82f6" opacity="0.6" />
+                </svg>
+            </div>
+
+            {/* Graph overlay */}
+            <div className="relative z-10 w-full h-full">
+                <ForceGraph2D
+                    ref={graphRef}
+                    graphData={data}
+                    width={dimensions.width}
+                    height={dimensions.height}
+                    nodeRelSize={6}
+                    nodeCanvasObject={nodeCanvasObject}
+                    linkCanvasObject={linkCanvasObject}
+                    onNodeClick={handleNodeClick}
+                    onNodeHover={handleNodeHover}
+                    cooldownTicks={100}
+                    linkDirectionalArrowLength={4}
+                    linkDirectionalArrowRelPos={1}
+                    backgroundColor="transparent"
+                    d3AlphaDecay={0.02}
+                    d3VelocityDecay={0.3}
+                />
+            </div>
         </div>
     );
 }
+
