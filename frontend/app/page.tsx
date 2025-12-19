@@ -445,32 +445,6 @@ export default function Dashboard() {
               highlightedNodes={highlightedNodes}
             />
 
-            {/* Legend */}
-            <div className="absolute bottom-4 left-4 glass-card px-3 py-2">
-              <div className="flex items-center gap-4 text-xs">
-                <div className="flex items-center gap-1.5">
-                  <div className="w-3 h-3 rounded-full bg-blue-500" />
-                  <span className="text-gray-400">Supplier</span>
-                </div>
-                <div className="flex items-center gap-1.5">
-                  <div className="w-3 h-3 rounded-full bg-purple-500" />
-                  <span className="text-gray-400">Component</span>
-                </div>
-                <div className="flex items-center gap-1.5">
-                  <div className="w-3 h-3 rounded-full bg-emerald-500" />
-                  <span className="text-gray-400">Product</span>
-                </div>
-                <div className="flex items-center gap-1.5">
-                  <div className="w-3 h-3 rounded-full bg-red-500" />
-                  <span className="text-gray-400">Risk</span>
-                </div>
-                <div className="flex items-center gap-1.5">
-                  <div className="w-3 h-3 rounded-full bg-amber-500" />
-                  <span className="text-gray-400">At Risk</span>
-                </div>
-              </div>
-            </div>
-
             {/* Node Details Panel */}
             <NodeDetailsPanel
               node={selectedNode}
