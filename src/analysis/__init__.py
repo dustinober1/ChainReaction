@@ -129,6 +129,23 @@ from src.analysis.accessibility import (
     FieldDefinition,
     DataDictionary,
 )
+from src.analysis.plugins import (
+    PluginManager,
+    Plugin,
+    SourcePlugin,
+    AnalysisPlugin,
+    IntegrationPlugin,
+    RiskTypeRegistry,
+    VersionManager,
+    PluginType,
+    PluginState,
+    CompatibilityLevel,
+    PluginVersion,
+    PluginMetadata,
+    PluginConfig,
+    CustomRiskType,
+    IntegrationEvent,
+)
 
 __all__ = [
     # Signatures
@@ -250,4 +267,20 @@ __all__ = [
     "FocusableElement",
     "FieldDefinition",
     "DataDictionary",
+    # Plugins
+    "PluginManager",
+    "Plugin",
+    "SourcePlugin",
+    "AnalysisPlugin",
+    "IntegrationPlugin",
+    "RiskTypeRegistry",
+    "VersionManager",
+    "PluginType",
+    "PluginState",
+    "CompatibilityLevel",
+    "PluginVersion",
+    "PluginMetadata",
+    "PluginConfig",
+    "CustomRiskType",
+    "IntegrationEvent",
 ]
