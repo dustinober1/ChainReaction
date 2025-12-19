@@ -60,6 +60,20 @@ from src.analysis.predictive import (
     ForecastAccuracy,
     PredictiveAlert,
 )
+from src.analysis.mitigation import (
+    MitigationGenerator,
+    MitigationRanker,
+    ImpactSimulator,
+    OutcomeTracker,
+    CoordinatedStrategyPlanner,
+    MitigationType,
+    MitigationStatus,
+    FeasibilityLevel,
+    MitigationOption as MitigationOptionModel,
+    ImpactSimulation,
+    MitigationOutcome,
+    CoordinatedStrategy,
+)
 
 __all__ = [
     # Signatures
@@ -117,4 +131,17 @@ __all__ = [
     "RiskForecast",
     "ForecastAccuracy",
     "PredictiveAlert",
+    # Mitigation
+    "MitigationGenerator",
+    "MitigationRanker",
+    "ImpactSimulator",
+    "OutcomeTracker",
+    "CoordinatedStrategyPlanner",
+    "MitigationType",
+    "MitigationStatus",
+    "FeasibilityLevel",
+    "MitigationOptionModel",
+    "ImpactSimulation",
+    "MitigationOutcome",
+    "CoordinatedStrategy",
 ]
