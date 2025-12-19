@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState, useMemo } from "react";
 import dynamic from "next/dynamic";
 
 // Dynamically import ForceGraph2D to avoid SSR issues
@@ -22,6 +22,11 @@ export interface GraphNode {
     location?: string;
     isAtRisk?: boolean;
     isRiskSource?: boolean;
+    // Fixed position coordinates (for geographic positioning)
+    fx?: number;
+    fy?: number;
+    x?: number;
+    y?: number;
 }
 
 export interface GraphLink {
@@ -43,6 +48,16 @@ interface SupplyChainGraphProps {
     highlightedNodes?: Set<string>;
 }
 
+// Geographic coordinates mapping (normalized to map viewBox 0-1000 x 0-500)
+const LOCATION_COORDS: Record<string, { x: number; y: number }> = {
+    "Taiwan": { x: 800, y: 175 },
+    "Vietnam": { x: 760, y: 200 },
+    "Germany": { x: 510, y: 95 },
+    "China": { x: 780, y: 150 },
+    "Korea": { x: 820, y: 135 },
+    // Add more locations as needed
+};
+
 // Color mapping for node types
 const NODE_COLORS: Record<string, string> = {
     supplier: "#3b82f6",
@@ -58,10 +73,11 @@ const getNodeColor = (node: GraphNode): string => {
 };
 
 const getNodeSize = (node: GraphNode): number => {
-    if (node.type === "risk") return 12;
-    if (node.type === "product") return 10;
-    if (node.type === "component") return 8;
-    return 6;
+    if (node.type === "risk") return 16;
+    if (node.type === "supplier") return 14;
+    if (node.type === "product") return 12;
+    if (node.type === "component") return 10;
+    return 8;
 };
 
 export default function SupplyChainGraph({
@@ -74,6 +90,96 @@ export default function SupplyChainGraph({
     const graphRef = useRef<any>(null);
     const containerRef = useRef<HTMLDivElement>(null);
     const [dimensions, setDimensions] = useState({ width: 800, height: 600 });
+
+    // Process nodes to add geographic coordinates
+    const processedData = useMemo(() => {
+        const scaleX = dimensions.width / 1000;
+        const scaleY = dimensions.height / 500;
+
+        // Create a map of node positions
+        const nodePositions: Record<string, { x: number; y: number }> = {};
+
+        // First pass: Position suppliers at their geographic locations
+        const processedNodes = data.nodes.map((node, index) => {
+            if (node.type === "supplier" && node.location && LOCATION_COORDS[node.location]) {
+                const coords = LOCATION_COORDS[node.location];
+                const x = coords.x * scaleX;
+                const y = coords.y * scaleY;
+                nodePositions[node.id] = { x, y };
+                return { ...node, fx: x, fy: y, x, y };
+            }
+            return { ...node };
+        });
+
+        // Second pass: Position components near their supplier connections
+        processedNodes.forEach((node, index) => {
+            if (node.type === "component" && !node.fx) {
+                // Find connected suppliers
+                const connectedSuppliers = data.links
+                    .filter(link => link.target === node.id || link.source === node.id)
+                    .map(link => link.source === node.id ? link.target : link.source)
+                    .filter(id => nodePositions[id]);
+
+                if (connectedSuppliers.length > 0) {
+                    // Position between connected suppliers
+                    let avgX = 0, avgY = 0;
+                    connectedSuppliers.forEach(supplierId => {
+                        avgX += nodePositions[supplierId].x;
+                        avgY += nodePositions[supplierId].y;
+                    });
+                    avgX /= connectedSuppliers.length;
+                    avgY /= connectedSuppliers.length;
+
+                    // Add some offset to avoid overlap
+                    const offset = 40 + (index % 3) * 20;
+                    const angle = (index * 0.8) + Math.PI / 4;
+                    const x = avgX + Math.cos(angle) * offset;
+                    const y = avgY + Math.sin(angle) * offset;
+
+                    nodePositions[node.id] = { x, y };
+                    node.fx = x;
+                    node.fy = y;
+                    node.x = x;
+                    node.y = y;
+                }
+            }
+        });
+
+        // Third pass: Position products and risks
+        processedNodes.forEach((node, index) => {
+            if ((node.type === "product" || node.type === "risk") && !node.fx) {
+                // Find connected nodes
+                const connectedNodes = data.links
+                    .filter(link => link.target === node.id || link.source === node.id)
+                    .map(link => link.source === node.id ? link.target : link.source)
+                    .filter(id => nodePositions[id]);
+
+                if (connectedNodes.length > 0) {
+                    let avgX = 0, avgY = 0;
+                    connectedNodes.forEach(nodeId => {
+                        avgX += nodePositions[nodeId].x;
+                        avgY += nodePositions[nodeId].y;
+                    });
+                    avgX /= connectedNodes.length;
+                    avgY /= connectedNodes.length;
+
+                    // Products go below, risks go above
+                    const yOffset = node.type === "risk" ? -60 : 60;
+                    const xOffset = (index % 4 - 2) * 35;
+                    const x = avgX + xOffset;
+                    const y = avgY + yOffset;
+
+                    nodePositions[node.id] = { x, y };
+                    node.fx = x;
+                    node.fy = y;
+                    node.x = x;
+                    node.y = y;
+                }
+            }
+        });
+
+        return { nodes: processedNodes, links: data.links };
+    }, [data, dimensions]);
 
     // Update dimensions on resize
     useEffect(() => {
@@ -93,12 +199,12 @@ export default function SupplyChainGraph({
 
     // Center graph on load
     useEffect(() => {
-        if (graphRef.current && data.nodes.length > 0) {
+        if (graphRef.current && processedData.nodes.length > 0) {
             setTimeout(() => {
-                graphRef.current?.zoomToFit(400, 50);
-            }, 500);
+                graphRef.current?.zoomToFit(400, 80);
+            }, 300);
         }
-    }, [data]);
+    }, [processedData]);
 
     const handleNodeClick = useCallback(
         (node: any) => {
@@ -343,20 +449,21 @@ export default function SupplyChainGraph({
             <div className="relative z-10 w-full h-full">
                 <ForceGraph2D
                     ref={graphRef}
-                    graphData={data}
+                    graphData={processedData}
                     width={dimensions.width}
                     height={dimensions.height}
-                    nodeRelSize={6}
+                    nodeRelSize={8}
                     nodeCanvasObject={nodeCanvasObject}
                     linkCanvasObject={linkCanvasObject}
                     onNodeClick={handleNodeClick}
                     onNodeHover={handleNodeHover}
-                    cooldownTicks={100}
-                    linkDirectionalArrowLength={4}
+                    cooldownTicks={0}
+                    linkDirectionalArrowLength={6}
                     linkDirectionalArrowRelPos={1}
                     backgroundColor="transparent"
-                    d3AlphaDecay={0.02}
-                    d3VelocityDecay={0.3}
+                    d3AlphaDecay={1}
+                    d3VelocityDecay={0.8}
+                    enableNodeDrag={false}
                 />
             </div>
         </div>
