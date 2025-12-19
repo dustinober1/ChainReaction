@@ -276,3 +276,25 @@ class ProcessingError(BaseModel):
     occurred_at: datetime = Field(default_factory=utc_now)
     recoverable: bool = Field(default=True, description="Whether the error is recoverable")
     details: dict[str, Any] = Field(default_factory=dict)
+
+
+# =============================================================================
+# Relationship Models for Import/Export
+# =============================================================================
+
+
+class SuppliesRelation(BaseModel):
+    """Relationship between a supplier and a component."""
+
+    supplier_id: str = Field(..., description="ID of the supplier")
+    component_id: str = Field(..., description="ID of the component")
+    is_primary: bool = Field(default=False, description="Whether this is the primary supplier")
+    lead_time_days: int | None = Field(default=None, ge=0, description="Lead time in days")
+
+
+class PartOfRelation(BaseModel):
+    """Relationship between a component and a product."""
+
+    component_id: str = Field(..., description="ID of the component")
+    product_id: str = Field(..., description="ID of the product")
+    quantity: int = Field(default=1, ge=1, description="Quantity needed per product")
