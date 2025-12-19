@@ -5,9 +5,16 @@ import { GraphNode } from "./SupplyChainGraph";
 interface NodeDetailsPanelProps {
     node: GraphNode | null;
     onClose: () => void;
+    onViewImpact?: (node: GraphNode) => void;
+    onShowConnections?: (node: GraphNode) => void;
 }
 
-export default function NodeDetailsPanel({ node, onClose }: NodeDetailsPanelProps) {
+export default function NodeDetailsPanel({
+    node,
+    onClose,
+    onViewImpact,
+    onShowConnections,
+}: NodeDetailsPanelProps) {
     if (!node) return null;
 
     const getTypeColor = (type: string) => {
@@ -81,10 +88,10 @@ export default function NodeDetailsPanel({ node, onClose }: NodeDetailsPanelProp
                             <div className="flex-1 h-2 bg-gray-800 rounded-full overflow-hidden">
                                 <div
                                     className={`h-full rounded-full transition-all duration-500 ${node.riskScore >= 70
-                                            ? "bg-gradient-to-r from-red-500 to-red-400"
-                                            : node.riskScore >= 40
-                                                ? "bg-gradient-to-r from-amber-500 to-amber-400"
-                                                : "bg-gradient-to-r from-green-500 to-green-400"
+                                        ? "bg-gradient-to-r from-red-500 to-red-400"
+                                        : node.riskScore >= 40
+                                            ? "bg-gradient-to-r from-amber-500 to-amber-400"
+                                            : "bg-gradient-to-r from-green-500 to-green-400"
                                         }`}
                                     style={{ width: `${node.riskScore}%` }}
                                 />
@@ -113,10 +120,22 @@ export default function NodeDetailsPanel({ node, onClose }: NodeDetailsPanelProp
 
                 {/* Actions */}
                 <div className="pt-2 border-t border-white/10 space-y-2">
-                    <button className="w-full px-3 py-2 text-sm font-medium text-white bg-blue-600 hover:bg-blue-500 rounded-lg transition">
+                    <button
+                        onClick={() => onViewImpact?.(node)}
+                        className="w-full px-3 py-2 text-sm font-medium text-white bg-blue-600 hover:bg-blue-500 rounded-lg transition flex items-center justify-center gap-2"
+                    >
+                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+                        </svg>
                         View Impact Analysis
                     </button>
-                    <button className="w-full px-3 py-2 text-sm font-medium text-gray-300 bg-white/5 hover:bg-white/10 rounded-lg transition">
+                    <button
+                        onClick={() => onShowConnections?.(node)}
+                        className="w-full px-3 py-2 text-sm font-medium text-gray-300 bg-white/5 hover:bg-white/10 rounded-lg transition flex items-center justify-center gap-2"
+                    >
+                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1" />
+                        </svg>
                         Show Connected Nodes
                     </button>
                 </div>
@@ -124,3 +143,4 @@ export default function NodeDetailsPanel({ node, onClose }: NodeDetailsPanelProp
         </div>
     );
 }
+
