@@ -106,108 +106,148 @@ vault kv put secret/chainreaction \
   neo4j_password=your-password
 ```
 
-## Docker Deployment
-
 ### Dockerfile (Backend)
 
+The backend uses a multi-stage build to keep the production image small and secure.
+
 ```dockerfile
-# backend/Dockerfile
-FROM python:3.13-slim
+# Dockerfile.backend
+FROM python:3.11-slim as builder
 
 WORKDIR /app
 
-# Install dependencies
-COPY pyproject.toml .
-RUN pip install --no-cache-dir .
+# Install build dependencies
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    build-essential \
+    && rm -rf /var/lib/apt/lists/*
 
-# Copy source code
-COPY src/ src/
+# Install Python dependencies
+COPY pyproject.toml README.md ./
+RUN pip install --no-cache-dir build hatchling
+RUN pip wheel --no-cache-dir --wheel-dir /wheels .
+
+# Stage 2: Production image
+FROM python:3.11-slim as production
+
+WORKDIR /app
 
 # Create non-root user
-RUN useradd -m appuser && chown -R appuser:appuser /app
-USER appuser
+RUN groupadd -r chainreaction && useradd -r -g chainreaction chainreaction
 
-# Health check
-HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \
-  CMD curl -f http://localhost:8000/health || exit 1
+# Install runtime dependencies
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    curl \
+    && rm -rf /var/lib/apt/lists/*
+
+# Copy wheels and install
+COPY --from=builder /wheels /wheels
+RUN pip install --no-cache-dir /wheels/*.whl && rm -rf /wheels
+
+# Copy application code
+COPY src/ ./src/
+COPY scripts/ ./scripts/
+COPY data/ ./data/
+
+# Set ownership
+RUN chown -R chainreaction:chainreaction /app
+
+USER chainreaction
+
+ENV APP_ENV=production
+ENV API_HOST=0.0.0.0
+ENV API_PORT=8000
 
 EXPOSE 8000
 
-CMD ["uvicorn", "src.api.main:app", "--host", "0.0.0.0", "--port", "8000"]
+HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \
+    CMD curl -f http://localhost:8000/health || exit 1
+
+CMD ["python", "-m", "uvicorn", "src.api.main:app", "--host", "0.0.0.0", "--port", "8000"]
 ```
 
 ### Dockerfile (Frontend)
 
+The frontend is built using Next.js standalone mode for optimal performance.
+
 ```dockerfile
 # frontend/Dockerfile
-FROM node:18-alpine AS builder
-
+FROM node:20-alpine AS deps
+RUN apk add --no-cache libc6-compat
 WORKDIR /app
-COPY package*.json ./
-RUN npm ci
+
+COPY package.json package-lock.json* ./
+RUN npm ci --legacy-peer-deps
+
+FROM node:20-alpine AS builder
+WORKDIR /app
+COPY --from=deps /app/node_modules ./node_modules
 COPY . .
 RUN npm run build
 
-FROM node:18-alpine AS runner
+FROM node:20-alpine AS runner
 WORKDIR /app
-
 ENV NODE_ENV=production
-
-COPY --from=builder /app/.next/standalone ./
-COPY --from=builder /app/.next/static ./.next/static
+RUN addgroup --system --gid 1001 nodejs
+RUN adduser --system --uid 1001 nextjs
 COPY --from=builder /app/public ./public
-
+COPY --from=builder --chown=nextjs:nodejs /app/.next/standalone ./
+COPY --from=builder --chown=nextjs:nodejs /app/.next/static ./.next/static
+USER nextjs
 EXPOSE 3000
-
 CMD ["node", "server.js"]
 ```
 
 ### Docker Compose
 
+The `docker-compose.yml` file orchestrates the entire stack.
+
 ```yaml
-# docker-compose.yml
 version: '3.8'
 
 services:
   backend:
-    build: 
+    build:
       context: .
-      dockerfile: backend/Dockerfile
+      dockerfile: Dockerfile.backend
+    container_name: chainreaction-backend
+    restart: unless-stopped
     ports:
       - "8000:8000"
     environment:
       - APP_ENV=production
       - NEO4J_URI=bolt://neo4j:7687
-    env_file:
-      - .env
-    depends_on:
-      neo4j:
-        condition: service_healthy
-    restart: unless-stopped
-    networks:
-      - chainreaction
+    volumes:
+      - ./data:/app/data:rw
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
       interval: 30s
       timeout: 10s
       retries: 3
+    networks:
+      - chainreaction-network
+    depends_on:
+      - neo4j
 
   frontend:
     build:
       context: ./frontend
       dockerfile: Dockerfile
+    container_name: chainreaction-frontend
+    restart: unless-stopped
     ports:
       - "3000:3000"
     environment:
+      - NODE_ENV=production
       - NEXT_PUBLIC_API_URL=http://backend:8000
+    networks:
+      - chainreaction-network
     depends_on:
       - backend
-    restart: unless-stopped
-    networks:
-      - chainreaction
 
   neo4j:
-    image: neo4j:5-community
+    image: neo4j:5.16-community
+    container_name: chainreaction-neo4j
+    restart: unless-stopped
     ports:
       - "7474:7474"
       - "7687:7687"
@@ -217,37 +257,22 @@ services:
     volumes:
       - neo4j_data:/data
       - neo4j_logs:/logs
-    restart: unless-stopped
-    networks:
-      - chainreaction
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:7474"]
-      interval: 30s
+      test: ["CMD-SHELL", "wget --no-verbose --tries=1 --spider http://localhost:7474 || exit 1"]
+      interval: 15s
       timeout: 10s
-      retries: 5
-
-  nginx:
-    image: nginx:alpine
-    ports:
-      - "80:80"
-      - "443:443"
-    volumes:
-      - ./nginx.conf:/etc/nginx/nginx.conf:ro
-      - ./certs:/etc/nginx/certs:ro
-    depends_on:
-      - backend
-      - frontend
-    restart: unless-stopped
+      retries: 10
+      start_period: 60s
     networks:
-      - chainreaction
+      - chainreaction-network
+
+networks:
+  chainreaction-network:
+    driver: bridge
 
 volumes:
   neo4j_data:
   neo4j_logs:
-
-networks:
-  chainreaction:
-    driver: bridge
 ```
 
 ### Nginx Configuration
@@ -309,24 +334,25 @@ http {
 
 ### Deployment Commands
 
+### Helper Commands (Makefile)
+
+A `Makefile` is provided for common Docker operations:
+
 ```bash
-# Build images
-docker-compose build
+# Build all images
+make docker-build
 
-# Start services
-docker-compose up -d
+# Start all services
+make docker-up
 
-# Check status
-docker-compose ps
+# Stop all services
+make docker-down
 
 # View logs
-docker-compose logs -f backend
+make docker-logs
 
-# Scale services
-docker-compose up -d --scale backend=3
-
-# Stop services
-docker-compose down
+# Clean up system (remove volumes and images)
+make docker-clean
 ```
 
 ## Cloud Deployment

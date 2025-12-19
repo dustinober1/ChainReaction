@@ -462,7 +462,7 @@ class APIResponse(BaseModel):
   "data": { ... },
   "meta": {
     "timestamp": "2024-01-15T10:30:00Z",
-    "version": "1.0.0"
+    "version": "0.1.0"
   }
 }
 ```

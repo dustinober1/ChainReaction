@@ -51,6 +51,36 @@ npm install
 npm run dev
 ```
 
+### Docker Development (Recommended for Database)
+
+If you have Docker installed, you can run the entire stack or just the database:
+
+```bash
+# Start everything (Database, Backend, Frontend)
+make docker-up
+
+# Start only the Neo4j database
+docker compose up -d neo4j
+
+# Check logs
+make docker-logs
+```
+
+Using Docker ensures you have the correct Neo4j version and APOC plugins pre-configured.
+
+### Local LLM with Ollama
+
+For a fully local development experience:
+
+1. [Install Ollama](https://ollama.ai/)
+2. Pull the recommended model: `ollama pull qwen3:1.7b`
+3. Update `.env`:
+   ```bash
+   LLM_PROVIDER=ollama
+   OLLAMA_BASE_URL=http://localhost:11434 # or http://host.docker.internal:11434 if in Docker
+   OLLAMA_MODEL=qwen3:1.7b
+   ```
+
 ### IDE Configuration
 
 #### VS Code

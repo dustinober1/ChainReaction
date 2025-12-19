@@ -23,7 +23,7 @@ The ChainReaction API provides programmatic access to supply chain risk data, al
 
 **Base URL:** `http://localhost:8000`
 
-**API Version:** `v1`
+**API Version:** `0.1.0`
 
 **Full Base Path:** `http://localhost:8000/api/v1`
 
@@ -103,7 +103,7 @@ All responses follow a standardized format:
   "data": { ... },
   "meta": {
     "timestamp": "2024-01-15T10:30:00Z",
-    "version": "1.0.0"
+    "version": "0.1.0"
   }
 }
 ```
@@ -447,11 +447,11 @@ Get supply chain statistics.
 {
   "success": true,
   "data": {
-    "total_suppliers": 25,
-    "total_components": 150,
-    "total_products": 12,
-    "active_risks": 3,
-    "at_risk_products": 5,
+    "total_suppliers": 200,
+    "total_components": 300,
+    "total_products": 100,
+    "active_risks": 10,
+    "at_risk_products": 40,
     "average_risk_score": 0.42
   }
 }

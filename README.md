@@ -345,6 +345,32 @@ MAX_EVENTS_PER_CYCLE=50
 CONFIDENCE_THRESHOLD=0.7
 ```
 
+## 📊 Data Generation
+
+ChainReaction includes a powerful synthetic data generator to simulate complex supply chains.
+
+```bash
+# Generate a small dataset (~1,000 nodes - 10x larger than original baseline)
+python scripts/seed_database.py small
+
+# Generate a medium dataset (~50,000 nodes)
+python scripts/seed_database.py medium
+
+# Generate a large dataset (~500,000 nodes)
+python scripts/seed_database.py large
+
+# Custom generation
+python scripts/seed_database.py custom --suppliers 500 --components 1500 --products 100
+```
+
+Presets have been recently **expanded by 10x** to better demonstrate the system's performance and visualization capabilities with realistic complexity.
+
+| Preset     | Suppliers | Components | Products | Approx Nodes |
+| ---------- | --------- | ---------- | -------- | ------------ |
+| **Small**  | 200       | 500        | 30       | ~1,000       |
+| **Medium** | 5,000     | 20,000     | 200      | ~50,000      |
+| **Large**  | 50,000    | 200,000    | 1,000    | ~500,000     |
+
 ## 📡 API Reference
 
 ### Authentication

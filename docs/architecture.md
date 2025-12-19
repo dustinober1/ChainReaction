@@ -422,3 +422,34 @@ Response (APIResponse)
 - Connection pooling for database access
 - Result caching with TTL
 - Lazy loading for graph traversals
+
+## Deployment Architecture
+
+ChainReaction is fully containerized using Docker, allowing for consistent environments from development to production.
+
+```
+┌─────────────────────────────────────────────────────────────┐
+│                      Docker Compose Stack                   │
+│                                                             │
+│  ┌────────────────┐      ┌────────────────┐                 │
+│  │   Frontend     │      │    Backend     │                 │
+│  │   (Next.js)    │◀────▶│   (FastAPI)    │                 │
+│  │   Port 3000    │      │   Port 8000    │                 │
+│  └────────────────┘      └───────┬────────┘                 │
+│                                  │                           │
+│                                  ▼                           │
+│                          ┌────────────────┐                 │
+│                          │     Neo4j      │                 │
+│                          │   (Graph DB)   │                 │
+│                          │   Port 7687    │                 │
+│                          └────────────────┘                 │
+│                                                             │
+└─────────────────────────────────────────────────────────────┘
+```
+
+**Key Deployment Features:**
+- **Multi-stage Builds**: Optimizes image size and security by separating build and runtime environments.
+- **Non-root Users**: Containers run as restricted users for enhanced security.
+- **Health Checks**: Integrated Docker health checks for automated service recovery.
+- **Persistent Volumes**: Data durability for Neo4j and local file storage.
+- **Simplified Orchestration**: `Makefile` providing intuitive commands for complex Docker lifecycle management.
