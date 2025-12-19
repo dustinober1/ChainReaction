@@ -5,9 +5,9 @@ CLI Script for generating synthetic supply chain data.
 Generates datasets of various sizes for development, testing, and demonstration.
 
 Usage:
-    python scripts/seed_database.py small   # ~100 nodes
-    python scripts/seed_database.py medium  # ~5000 nodes
-    python scripts/seed_database.py large   # ~50000 nodes
+    python scripts/seed_database.py small   # ~1000 nodes (10x baseline)
+    python scripts/seed_database.py medium  # ~50000 nodes
+    python scripts/seed_database.py large   # ~500000 nodes
 """
 
 import argparse
@@ -117,13 +117,13 @@ def main():
     # Convert to graph format if requested
     if args.graph_format:
         generator = SupplyChainGenerator(seed=args.seed)
-        # Regenerate to get graph format
+        # Regenerate to get graph format with 10x expanded datasets
         if args.size == "small":
-            generator.generate(num_suppliers=20, num_components=50, num_products=3)
+            generator.generate(num_suppliers=200, num_components=500, num_products=30)
         elif args.size == "medium":
-            generator.generate(num_suppliers=500, num_components=2000, num_products=20)
+            generator.generate(num_suppliers=5000, num_components=20000, num_products=200)
         elif args.size == "large":
-            generator.generate(num_suppliers=5000, num_components=20000, num_products=100)
+            generator.generate(num_suppliers=50000, num_components=200000, num_products=1000)
         else:
             generator.generate(
                 num_suppliers=args.suppliers,

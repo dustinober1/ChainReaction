@@ -57,47 +57,68 @@ _products: list[dict[str, Any]] = []
 
 
 def _init_demo_data():
-    """Initialize demo data for the API."""
+    """Initialize demo data for the API with expanded 10x dataset."""
     global _suppliers, _components, _products
 
     if _suppliers:
         return  # Already initialized
 
-    # Demo suppliers
+    # Expanded locations for more realistic global supply chain
+    locations = [
+        "Taiwan", "Vietnam", "China", "Germany", "USA", "Japan", "Korea",
+        "Mexico", "India", "Thailand", "Singapore", "Malaysia", "Philippines",
+        "Czech Republic", "Poland", "Hungary", "Netherlands", "Belgium",
+        "France", "Italy", "Spain", "UK", "Sweden", "Canada", "Brazil"
+    ]
+
+    # Demo suppliers (10x: 200 suppliers)
     _suppliers = [
         {
             "id": f"SUP-{i:04d}",
             "name": f"Supplier {i}",
             "tier": (i % 3) + 1,
-            "location": ["Taiwan", "Vietnam", "China", "Germany", "USA"][i % 5],
-            "risk_score": 25.0 + (i * 5) % 50,
-            "components_supplied": 3 + (i % 5),
+            "location": locations[i % len(locations)],
+            "risk_score": 15.0 + (i * 3) % 60,
+            "components_supplied": 3 + (i % 8),
         }
-        for i in range(20)
+        for i in range(200)
     ]
 
-    # Demo components
+    # Component categories for variety
+    categories = [
+        "Semiconductor", "PCB", "Display", "Battery", "Sensor",
+        "Memory", "Storage", "Power Supply", "Chassis", "Motor",
+        "Antenna", "Camera", "Speaker", "Connector", "Cable"
+    ]
+
+    # Demo components (10x: 300 components)
     _components = [
         {
             "id": f"COMP-{i:04d}",
             "name": f"Component {i}",
-            "category": ["Semiconductor", "PCB", "Display", "Battery", "Sensor"][i % 5],
-            "suppliers": [f"SUP-{(i*2) % 20:04d}", f"SUP-{(i*2+1) % 20:04d}"],
-            "products": [f"PROD-{(i // 3) % 10:04d}"],
+            "category": categories[i % len(categories)],
+            "suppliers": [f"SUP-{(i*2) % 200:04d}", f"SUP-{(i*2+1) % 200:04d}"],
+            "products": [f"PROD-{(i // 3) % 100:04d}"],
         }
-        for i in range(30)
+        for i in range(300)
     ]
 
-    # Demo products
+    # Product categories for variety
+    product_categories = [
+        "Electronics", "Automotive", "Medical", "Industrial",
+        "Consumer", "Aerospace", "Telecommunications", "Energy"
+    ]
+
+    # Demo products (10x: 100 products)
     _products = [
         {
             "id": f"PROD-{i:04d}",
             "name": f"Product {i}",
-            "category": ["Electronics", "Automotive", "Medical", "Industrial"][i % 4],
-            "risk_score": 15.0 + (i * 7) % 60,
-            "component_count": 5 + (i % 10),
+            "category": product_categories[i % len(product_categories)],
+            "risk_score": 15.0 + (i * 5) % 55,
+            "component_count": 5 + (i % 15),
         }
-        for i in range(10)
+        for i in range(100)
     ]
 
 
