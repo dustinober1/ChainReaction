@@ -73,9 +73,8 @@ data/neo4j/
 .git/
 .gitignore
 
-# Documentation
+# Documentation (keep README.md for package build)
 docs/
-*.md
 !README.md
 
 # Tests
